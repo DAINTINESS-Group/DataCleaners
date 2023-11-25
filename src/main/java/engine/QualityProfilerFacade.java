@@ -17,7 +17,7 @@ import rowchecks.IRowCheck.CheckResult;
 public class QualityProfilerFacade {
 
     //TODO: Move this to separate class
-    private final static class ForEachChecker implements ForeachFunction<Row>
+    private static class ForEachChecker implements ForeachFunction<Row>
     {
 
         static ArrayList<IRowCheck> rowChecks;
@@ -43,20 +43,14 @@ public class QualityProfilerFacade {
         
     }
 
+    
 
 
+    private static QualityProfilerFacade facade = new QualityProfilerFacade();
+    private SparkSession spark;
+    private HashMap<String, Dataset<Row>> dataSets = new HashMap<String, Dataset<Row>>();
 
-
-    final static int DATASET_ALREADY_EXISTS = 0;
-    final static int INTERNAL_ERROR = -1;
-
-    final static String DBMS_TYPE_MYSQL = "com.mysql.cj.jdbc.Driver";
-
-    static QualityProfilerFacade facade = new QualityProfilerFacade();
-    SparkSession spark;
-    HashMap<String, Dataset<Row>> dataSets = new HashMap<String, Dataset<Row>>();
-
-    QualityOrderExtractor orderExtractor = new QualityOrderExtractor();
+    private QualityOrderExtractor orderExtractor = new QualityOrderExtractor();
 
 
     private QualityProfilerFacade()
@@ -76,7 +70,7 @@ public class QualityProfilerFacade {
     {
         try
         {
-            if (dataSets.containsKey(frameName)) return DATASET_ALREADY_EXISTS;
+            if (dataSets.containsKey(frameName)) return 0;
 
             Dataset<Row> df = spark.read().option("header",hasHeader).csv(path);
             dataSets.put(frameName, df);
@@ -84,7 +78,7 @@ public class QualityProfilerFacade {
         }
         catch (Exception e)
         {
-            return INTERNAL_ERROR;
+            return -1;
         }
         
     }
@@ -95,7 +89,7 @@ public class QualityProfilerFacade {
     {
         try
         {
-            if (dataSets.containsKey(frameName)) return DATASET_ALREADY_EXISTS;
+            if (dataSets.containsKey(frameName)) return 0;
 
             Properties properties = new Properties();
             properties.setProperty("driver", databaseType);
@@ -108,7 +102,7 @@ public class QualityProfilerFacade {
         }
         catch (Exception e)
         {
-            return INTERNAL_ERROR;
+            return -1;
         }
         
     }
@@ -116,11 +110,11 @@ public class QualityProfilerFacade {
     //TODO: Add exceptions
     public void runQualityChecks(QualityOrder order)
     {
-        ArrayList<IRowCheck> checks = orderExtractor.getRowChecksFromOrder(order);
+        ArrayList<IRowCheck> checks = orderExtractor.getRowChecksFromOrder(order, dataSets);
         Dataset<Row> targetSet = getDataset(order.getTargetDataset());
-
+       
         ForEachChecker checker = new ForEachChecker(checks);
-        targetSet.foreach(checker);
+        targetSet.foreach(checker);   
         System.out.println("Number of failed entries: " + checker.getFails());
     }
 

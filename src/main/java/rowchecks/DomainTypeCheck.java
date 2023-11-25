@@ -7,8 +7,8 @@ import utils.DomainType;
 
 public class DomainTypeCheck implements IRowCheck {
 
-    String targetColumn;
-    DomainType type;
+    private String targetColumn;
+    private DomainType type;
 
     public DomainTypeCheck(String targetColumn, DomainType type)
     {

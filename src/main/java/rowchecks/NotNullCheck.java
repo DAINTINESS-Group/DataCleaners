@@ -4,7 +4,7 @@ import org.apache.spark.sql.Row;
 
 public class NotNullCheck implements IRowCheck {
 
-    String targetColumn;
+    private String targetColumn;
 
     public NotNullCheck(String targetColumn)
     {

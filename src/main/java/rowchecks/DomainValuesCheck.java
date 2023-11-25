@@ -7,8 +7,8 @@ import org.apache.spark.sql.Row;
 
 public class DomainValuesCheck implements IRowCheck{
 
-    ArrayList<String> domainValues;
-    String targetColumn;
+    private ArrayList<String> domainValues;
+    private String targetColumn;
 
     public DomainValuesCheck(String targetColumn, String[] domainValues)
     {

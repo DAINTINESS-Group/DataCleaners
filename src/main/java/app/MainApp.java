@@ -30,15 +30,16 @@ public class MainApp {
 
         spark.sparkContext().setLogLevel("ERROR");
 
-        facade.loadDatasetFromFile("\\src\\test\\resources\\datasets\\cars_100.csv", "frame1", true);
+        facade.loadDatasetFromFile("src\\test\\resources\\datasets\\cars_100.csv", "frame1", true);
+        facade.loadDatasetFromFile("src\\test\\resources\\datasets\\cars_100.csv", "frame2", true);
        
         QualityOrder order = QualityOrder.builder()
                                 .onDataset("frame1")
-                                .withNoNullValues("price")
-                                .withColumnType("year", DomainType.INTEGER)
-                                .withNumericColumn("year", 2015, 2020, true, true)
-                                .withNumericColumn("price", 0, 18_000, true, false)
+                                .withForeignKeys("price","frame2","price")
+                                .withColumnType("price", DomainType.INTEGER)
                                 .withColumnValues("manufacturer", new String[] {"audi"})
+                                .withNoNullValues("engineSize")
+                                .withNumericColumn("engineSize", 0, 2)
                                 .build();
         facade.runQualityChecks(order);
 

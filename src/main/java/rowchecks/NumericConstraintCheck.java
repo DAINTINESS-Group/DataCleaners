@@ -4,11 +4,11 @@ import org.apache.spark.sql.Row;
 
 public class NumericConstraintCheck implements IRowCheck{
 
-    String targetColumn;
-    double minValue = Double.NEGATIVE_INFINITY;
-    boolean isLeftInclusive = true;
-    double maxValue = Double.POSITIVE_INFINITY;
-    boolean isRightInclusive = true;
+    private String targetColumn;
+    private double minValue = Double.NEGATIVE_INFINITY;
+    private boolean isLeftInclusive = true;
+    private double maxValue = Double.POSITIVE_INFINITY;
+    private boolean isRightInclusive = true;
 
     public NumericConstraintCheck(String targetColumn, double minValue, double maxValue)
     {

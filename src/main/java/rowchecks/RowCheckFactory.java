@@ -1,29 +1,46 @@
 package rowchecks;
 
+import java.util.HashMap;
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import utils.DomainType;
+import utils.DomainTypeSettings;
+import utils.DomainValueSettings;
+import utils.ForeignKeySettings;
+import utils.NotNullSettings;
+import utils.NumberConstraintSettings;
 
 //TODO add defensive code for null parameters
 public class RowCheckFactory {
-	public IRowCheck createDomainTypeCheck(String targetColumn, DomainType type) {
-		return new 	DomainTypeCheck(targetColumn, type);
+
+	HashMap<String, Dataset<Row>> registeredSets;
+	public RowCheckFactory(HashMap<String, Dataset<Row>> registeredSets)
+	{
+		this.registeredSets = registeredSets;
 	}
 
-	public IRowCheck createDomainValuesCheck(String targetColumn, String[] domainValues) {
-		return new DomainValuesCheck(targetColumn, domainValues);
+	public IRowCheck createDomainTypeCheck(DomainTypeSettings dtSettings) {
+		return new 	DomainTypeCheck(dtSettings.getTargetColumn(), dtSettings.getType());
+	}
+
+	public IRowCheck createDomainValuesCheck(DomainValueSettings dvSettings) {
+		return new DomainValuesCheck(dvSettings.getTargetColumn(), dvSettings.getValues());
 	}
 	
-	public IRowCheck createNotNullCheck(String targetColumn) {
-		return new NotNullCheck(targetColumn);
+	public IRowCheck createNotNullCheck(NotNullSettings nnSettings) {
+		return new NotNullCheck(nnSettings.getTargetColumn());
 	}
 	
-	public IRowCheck createNumericConstraintCheck(String targetColumn, double minValue, double maxValue, boolean includeMinValue, boolean includeMaxValue) {
-		return new NumericConstraintCheck(targetColumn, minValue, maxValue, includeMinValue, includeMaxValue);
+	public IRowCheck createNumericConstraintCheck(NumberConstraintSettings ncSettings) {
+		return new NumericConstraintCheck(ncSettings.getTargetColumn(),
+										ncSettings.getMinValue(), ncSettings.getMaxValue(),
+										ncSettings.isIncludeMinimum(), ncSettings.isIncludeMaximum());
 	}
 	
-	public IRowCheck createBTreeForeignKeyCheck(String targetColumn, Dataset<Row> foreignKeyDataset, String foreignKeyColumn) {
-		return new BTreeForeignKeyCheck(targetColumn, foreignKeyDataset, foreignKeyColumn);
+	public IRowCheck createBTreeForeignKeyCheck(ForeignKeySettings fkSettings) {
+		return new BTreeForeignKeyCheck(fkSettings.getTargetColumn(), 
+										registeredSets.get(fkSettings.getForeignKeyDataset()),
+										fkSettings.getForeignKeyColumn());
 	}
-}//end class
+}
