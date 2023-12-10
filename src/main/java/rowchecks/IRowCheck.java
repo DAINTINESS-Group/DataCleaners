@@ -2,18 +2,15 @@ package rowchecks;
 
 import org.apache.spark.sql.Row;
 
-public interface IRowCheck {
-    
-    enum CheckResult
-    {
-        PASSED,
-        FAILED,
-        MISSING_VALUE,
-        ILLEGAL_FIELD,
-        INTERNAL_ERROR
-    }
+import model.rowcheckresults.IRowCheckResult;
+import utils.CheckResult;
+import utils.VioletingRowPolicy;
 
-    public CheckResult check(Row row);
-    public String getCheckType();
+public interface IRowCheck {
+
+    public CheckResult check(Row row, VioletingRowPolicy policy);
+
+    public IRowCheckResult getCheckResult();
+    public void setCheckResult(IRowCheckResult result);
     
 }

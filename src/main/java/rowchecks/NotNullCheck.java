@@ -2,29 +2,36 @@ package rowchecks;
 
 import org.apache.spark.sql.Row;
 
-public class NotNullCheck implements IRowCheck {
+import model.rowcheckresults.RowResultFactory;
+import utils.CheckResult;
+import utils.VioletingRowPolicy;
+
+public class NotNullCheck extends GenericRowCheck {
 
     private String targetColumn;
 
     public NotNullCheck(String targetColumn)
     {
         this.targetColumn = targetColumn;
+        checkResult = new RowResultFactory().createNotNullCheckResult(targetColumn);
     }
 
-    public CheckResult check(Row row) {
+    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy) {
         try
         {
-            return row.isNullAt(row.fieldIndex(targetColumn)) ? CheckResult.FAILED : CheckResult.PASSED;
+            if (row.isNullAt(row.fieldIndex(targetColumn)))
+            {
+                addRejectedRow(row, violetingRowPolicy);
+                return CheckResult.FAILED;
+            }
+            addApprovedRow(row, violetingRowPolicy);
+            return CheckResult.PASSED;
         }
         catch (IllegalArgumentException e)
         {
+            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.ILLEGAL_FIELD;
         }
-    }
-
-    @Override
-    public String getCheckType() {
-        return "Null Value Check on column: " + targetColumn;
     }
     
 }

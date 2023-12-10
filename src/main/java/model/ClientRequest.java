@@ -1,4 +1,4 @@
-package engine;
+package model;
 
 import java.util.ArrayList;
 
@@ -8,8 +8,9 @@ import java.util.ArrayList;
  import utils.ForeignKeySettings;
  import utils.NotNullSettings;
  import utils.NumberConstraintSettings;
+import utils.VioletingRowPolicy;
 
-public class QualityOrder {
+public class ClientRequest {
     
     private final static Builder builder = new Builder();
 
@@ -19,9 +20,10 @@ public class QualityOrder {
     private ArrayList<DomainValueSettings> domainValueChecks;
     private ArrayList<NotNullSettings> notNullChecks;
     private ArrayList<NumberConstraintSettings> numberConstraintChecks;
+    private VioletingRowPolicy violationPolicy;
 
 
-    private QualityOrder(Builder builder)
+    private ClientRequest(Builder builder)
     {
         targetDataset = builder.targetDataset;
         foreignKeyChecks = builder.foreignKeyChecks;
@@ -29,6 +31,7 @@ public class QualityOrder {
         domainValueChecks = builder.domainValueChecks;
         notNullChecks = builder.notNullChecks;
         numberConstraintChecks = builder.numberConstraintChecks;
+        violationPolicy = builder.policy;
 
     }
 
@@ -56,6 +59,10 @@ public class QualityOrder {
         return numberConstraintChecks;
     }
 
+    public VioletingRowPolicy getViolationPolicy()
+    {
+        return violationPolicy;
+    }
 
 
     public static Builder builder() { return builder; }
@@ -63,11 +70,12 @@ public class QualityOrder {
     public static class Builder
     {
         String targetDataset = null;
-        ArrayList<ForeignKeySettings> foreignKeyChecks = null;
-        ArrayList<DomainTypeSettings> domainTypeChecks = null;
-        ArrayList<DomainValueSettings> domainValueChecks = null;
-        ArrayList<NotNullSettings> notNullChecks = null;
-        ArrayList<NumberConstraintSettings> numberConstraintChecks = null;
+        ArrayList<ForeignKeySettings> foreignKeyChecks = new ArrayList<ForeignKeySettings>();
+        ArrayList<DomainTypeSettings> domainTypeChecks = new ArrayList<DomainTypeSettings>();
+        ArrayList<DomainValueSettings> domainValueChecks = new ArrayList<DomainValueSettings>();
+        ArrayList<NotNullSettings> notNullChecks = new ArrayList<NotNullSettings>();
+        ArrayList<NumberConstraintSettings> numberConstraintChecks = new ArrayList<NumberConstraintSettings>();
+        VioletingRowPolicy policy = VioletingRowPolicy.WARN;
 
         private Builder() {}
 
@@ -78,33 +86,25 @@ public class QualityOrder {
         }
 
         public Builder withForeignKeys(String targetColumn, String foreignKeyDataset, String foreignKeyColumn)
-        {
-            if (foreignKeyChecks == null) { foreignKeyChecks = new ArrayList<ForeignKeySettings>(); }
-            
+        {   
             foreignKeyChecks.add(new ForeignKeySettings(targetColumn, foreignKeyDataset, foreignKeyColumn));
             return this;
         }
 
         public Builder withColumnType(String targetColumn, DomainType type)
         {
-            if (domainTypeChecks == null) { domainTypeChecks = new ArrayList<DomainTypeSettings>(); }
-
             domainTypeChecks.add(new DomainTypeSettings(targetColumn, type));
             return this;
         }
 
         public Builder withColumnValues(String targetColumn, String[] values)
         {
-            if (domainValueChecks == null) { domainValueChecks = new ArrayList<DomainValueSettings>(); }
-
             domainValueChecks.add(new DomainValueSettings(targetColumn, values));
             return this;
         }
 
         public Builder withNoNullValues(String targetColumn)
         {
-            if (notNullChecks == null) { notNullChecks = new ArrayList<NotNullSettings>(); }
-
             notNullChecks.add(new NotNullSettings(targetColumn));
             return this;
         }
@@ -112,8 +112,6 @@ public class QualityOrder {
         public Builder withNumericColumn(String targetColumn, double minValue, double maxValue,
                                           boolean includeMin, boolean includeMax)
         {
-            if (numberConstraintChecks == null) { numberConstraintChecks = new ArrayList<NumberConstraintSettings>(); }
-
             numberConstraintChecks.add(new NumberConstraintSettings(targetColumn, minValue, maxValue, includeMin, includeMax));
             return this;
         }
@@ -123,9 +121,15 @@ public class QualityOrder {
            return withNumericColumn(targetColumn, minValue, maxValue, true, true);
         }
 
-        public QualityOrder build()
+        public Builder withViolationPolicy(VioletingRowPolicy policy)
         {
-            return new QualityOrder(this);
+            this.policy = policy;
+            return this;
+        }
+
+        public ClientRequest build()
+        {
+            return new ClientRequest(this);
         }
     }
 }

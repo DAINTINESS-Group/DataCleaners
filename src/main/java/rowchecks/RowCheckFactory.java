@@ -1,10 +1,11 @@
 package rowchecks;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import model.DatasetProfile;
 import utils.DomainTypeSettings;
 import utils.DomainValueSettings;
 import utils.ForeignKeySettings;
@@ -14,10 +15,10 @@ import utils.NumberConstraintSettings;
 //TODO add defensive code for null parameters
 public class RowCheckFactory {
 
-	HashMap<String, Dataset<Row>> registeredSets;
-	public RowCheckFactory(HashMap<String, Dataset<Row>> registeredSets)
+	ArrayList<DatasetProfile> profiles;
+	public RowCheckFactory(ArrayList<DatasetProfile> profiles)
 	{
-		this.registeredSets = registeredSets;
+		this.profiles = profiles;
 	}
 
 	public IRowCheck createDomainTypeCheck(DomainTypeSettings dtSettings) {
@@ -39,8 +40,19 @@ public class RowCheckFactory {
 	}
 	
 	public IRowCheck createBTreeForeignKeyCheck(ForeignKeySettings fkSettings) {
+		
+		Dataset<Row> df = null;
+		for (DatasetProfile profile : profiles)
+		{
+			if (profile.getAlias().equals(fkSettings.getForeignKeyDataset()))
+			{
+				df = profile.getDataset();
+				break;
+			}
+		}
+
 		return new BTreeForeignKeyCheck(fkSettings.getTargetColumn(), 
-										registeredSets.get(fkSettings.getForeignKeyDataset()),
+										df,
 										fkSettings.getForeignKeyColumn());
 	}
 }

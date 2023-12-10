@@ -2,10 +2,12 @@ package rowchecks;
 
 import org.apache.spark.sql.Row;
 
+import model.rowcheckresults.RowResultFactory;
 import utils.DomainType;
+import utils.VioletingRowPolicy;
+import utils.CheckResult;
 
-
-public class DomainTypeCheck implements IRowCheck {
+public class DomainTypeCheck extends GenericRowCheck {
 
     private String targetColumn;
     private DomainType type;
@@ -14,10 +16,11 @@ public class DomainTypeCheck implements IRowCheck {
     {
         this.targetColumn = targetColumn;
         this.type = type;
+        checkResult = new RowResultFactory().createDomainTypeCheckResult(targetColumn, type);
     }
 
-    //TO-DO: Upper limit on NUMERIC and INT, ALPHA. Regex?
-    public CheckResult check(Row row) {
+    //TODO: Upper limit on NUMERIC and INT, ALPHA. Regex?
+    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy) {
         try
         {
             String targetValue = row.getString(row.fieldIndex(targetColumn));
@@ -25,16 +28,26 @@ public class DomainTypeCheck implements IRowCheck {
             {
                 case INTEGER:
                     Integer.parseInt(targetValue);
+                    addApprovedRow(row, violetingRowPolicy);
                     return CheckResult.PASSED;
                 case BOOLEAN:
-                    if (targetValue.equals("1") || targetValue.equals("0")) return CheckResult.PASSED;
-                    if (targetValue.toLowerCase().equals("true") || targetValue.toLowerCase().equals("false")) return CheckResult.PASSED;
+                    if (targetValue.equals("1") || targetValue.equals("0") 
+                        || targetValue.toLowerCase().equals("true") 
+                        || targetValue.toLowerCase().equals("false"))
+                    {
+                        addApprovedRow(row, violetingRowPolicy);
+                        return CheckResult.PASSED;
+                    }
+
+                    addRejectedRow(row, violetingRowPolicy);
                     return CheckResult.FAILED;
                 case NUMERIC:
                     Double.parseDouble(targetValue);
+                    addApprovedRow(row, violetingRowPolicy);
                     return CheckResult.PASSED;
                 case ALPHA:
                     Double.parseDouble(targetValue);
+                    addRejectedRow(row, violetingRowPolicy);
                     return CheckResult.FAILED;
                 default:
                     break;
@@ -44,42 +57,21 @@ public class DomainTypeCheck implements IRowCheck {
         {
             if (type == DomainType.ALPHA)
             {
+                addApprovedRow(row, violetingRowPolicy);
                 return CheckResult.PASSED;
             }
         }
         catch (IllegalArgumentException e)
         {
+            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.ILLEGAL_FIELD;
         }
         catch (NullPointerException e)
         {
+            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.MISSING_VALUE;
         }
+        addRejectedRow(row, violetingRowPolicy);
         return CheckResult.FAILED;
-    }
-
-    @Override
-    public String getCheckType() {
-        String ret = "Domain Type Check ";
-
-        switch (type)
-            {
-                case INTEGER:
-                    ret += "Integer ";
-                    break;
-                case BOOLEAN:
-                    ret += "Boolean ";
-                    break;
-                case NUMERIC:
-                    ret += "Numeric ";
-                    break;
-                case ALPHA:
-                    ret += "Alphabetical ";
-                    break;
-                default:
-                    break;
-            }
-        return ret + "for column: " + targetColumn;
-    }
-    
+    }  
 }

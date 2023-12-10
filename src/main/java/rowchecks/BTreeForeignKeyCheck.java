@@ -10,15 +10,17 @@ import btree4j.BTree;
 import btree4j.BTreeException;
 import btree4j.Value;
 import btree4j.utils.io.FileUtils;
+import model.rowcheckresults.RowResultFactory;
+import utils.CheckResult;
+import utils.VioletingRowPolicy;
 
 
 
-public class BTreeForeignKeyCheck implements IRowCheck{
+public class BTreeForeignKeyCheck extends GenericRowCheck {
  
     private static class ForEachInserter implements ForeachFunction<Row>
     {
         static BTree btree;
-        static int counter = 0;
 
         public ForEachInserter(BTree tree)
         {
@@ -28,23 +30,20 @@ public class BTreeForeignKeyCheck implements IRowCheck{
         public void call(Row row) throws Exception {
             String val = row.getString(0);
             btree.addValue(new Value(val), 1);
-            counter += 1;
-
-            if (counter % 1136073 == 0) System.out.println(counter / 1136073 + "/100 A");
         }
     }
 
 
-    String targetColumn;
-    String foreignKeyColumn;
-    BTree btree;
-    int otherCounter = 0;
+    private String targetColumn;
+    private String foreignKeyColumn;
+    
+    static BTree btree; //TODO: Can't make BTree serializable. Find sollution. ALSO CHANGE TO BPLUSTREE
 
     public BTreeForeignKeyCheck(String targetColumn, Dataset<Row> foreignKeyDataset, String foreignKeyColumn)
     {
         this.targetColumn = targetColumn;
         this.foreignKeyColumn = foreignKeyColumn;
-
+        this.checkResult = new RowResultFactory().createForeignKeyCheckResult(targetColumn, foreignKeyColumn);
         try
         { 
             File tempDir = FileUtils.getTempDir();
@@ -60,40 +59,33 @@ public class BTreeForeignKeyCheck implements IRowCheck{
         }
         catch (Exception e)
         {
-            System.out.println("XXX" + e);
+            System.out.println("FOREIGN KEY BTREE ERROR:" + e);
         }
     }
 
-    public CheckResult check(Row row)
+    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy)
     {
         String targetValue = row.getString(row.fieldIndex(targetColumn));
-        otherCounter += 1;
-        if (otherCounter % 1136073 == 0) System.out.println(otherCounter / 1136073 + "/100 B");
         try
         {
             if (btree.findValue(new Value(targetValue)) == 1)
             {
+                addApprovedRow(row, violetingRowPolicy);
                 return CheckResult.PASSED;
             }
         }
         catch (BTreeException e)
         {
             System.err.println(e);
+            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.INTERNAL_ERROR;
         }
         catch (NullPointerException e)
         {
+            addRejectedRow(row, violetingRowPolicy);
             return CheckResult.FAILED; //TODO: If value is NULL, do we fail it? 
         }
-
+        addRejectedRow(row, violetingRowPolicy);
         return CheckResult.FAILED;
     }
-
-
-    public String getCheckType() {
-        return "Foreign Key Restriction: " +  targetColumn + "->" + foreignKeyColumn;
-    }
-
-
-
 }

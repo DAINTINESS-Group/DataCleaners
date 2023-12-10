@@ -1,30 +1,50 @@
 package rowchecks;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import static org.junit.Assert.assertSame;
+
+import java.util.ArrayList;
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.junit.Before;
 
+import config.SparkConfig;
+import utils.CheckResult;
+import utils.VioletingRowPolicy;
+
 public abstract class RowCheckTest {
     SparkSession spark;
-    Dataset<Row> testSet;
+    static Dataset<Row> testSet;
+
+    static ArrayList<IRowCheck> rowChecks = new ArrayList<IRowCheck>();
+    static ArrayList<Row> excludedRows = new ArrayList<Row>();;
+    static CheckResult expectedResult;
+    static CheckResult excludedResult;
 
     @Before
     public void setUp()
     {
-        Logger.getLogger("org").setLevel(Level.OFF);
-        Logger.getLogger("akka").setLevel(Level.OFF);
-        spark = SparkSession
-                        .builder()
-                        .appName("Java Spark SQL")
-                        .config("spark.master", "local")
-                        .getOrCreate();
-
-        spark.sparkContext().setLogLevel("ERROR");
-
-
+        spark = new SparkConfig().getSparkSession();
         testSet = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\test.csv");
+    }
+
+    public static void checkRow(Row row)
+    {
+        for (IRowCheck c : rowChecks)
+        {
+            assertSame(expectedResult, c.check(row, VioletingRowPolicy.WARN));
+        } 
+    }
+
+    public static void checkRowWithExclusion(Row row)
+    {
+        for (IRowCheck c : rowChecks)
+        {
+            if (c.check(row, VioletingRowPolicy.WARN) == excludedResult)
+            {
+                excludedRows.add(row);
+            }
+        } 
     }
 }

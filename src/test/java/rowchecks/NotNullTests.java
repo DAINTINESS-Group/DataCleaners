@@ -1,22 +1,22 @@
 package rowchecks;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
 
-import rowchecks.IRowCheck.CheckResult;
+import utils.CheckResult;
 
 public class NotNullTests extends RowCheckTest{
     
     @Test
     public void notNullGoodDayTest()
     {
-        ArrayList<IRowCheck> checks = new ArrayList<IRowCheck>();
-        checks.add(new NotNullCheck("name"));
-        testSet.foreach(new ForEachChecker(checks, CheckResult.PASSED));
+        rowChecks.clear();
+        expectedResult = CheckResult.PASSED;
+        rowChecks.add(new NotNullCheck("name"));
+        testSet.foreach(row -> { checkRow(row); });
 
-        checks.clear();
-        checks.add(new NotNullCheck("null"));
-        testSet.foreach(new ForEachChecker(checks, CheckResult.FAILED));
+        rowChecks.clear();
+        expectedResult = CheckResult.FAILED;
+        rowChecks.add(new NotNullCheck("null"));
+        testSet.foreach(row -> { checkRow(row); });
     }
 }
