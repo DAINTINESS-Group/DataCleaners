@@ -29,7 +29,7 @@ public class Client {
                             .withColumnType("price", DomainType.INTEGER)
                             .withColumnValues("manufacturer", new String[] {"audi"})
                             .withNoNullValues("price")
-                            .withColumnType("engineSize", DomainType.NUMERIC)
+                            .withColumnType("manufacturer", DomainType.ALPHA)
                             .withViolationPolicy(VioletingRowPolicy.ISOLATE)
                             .build();
         

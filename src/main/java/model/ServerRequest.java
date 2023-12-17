@@ -3,10 +3,12 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.functions;
 
-import model.rowcheckresults.IRowCheckResult;
 import rowchecks.IRowCheck;
 import utils.CheckResult;
 import utils.VioletingRowPolicy;
@@ -20,12 +22,6 @@ public class ServerRequest implements Serializable{
     private ArrayList<IRowCheck> rowChecks;
     private ServerRequestResult requestResult;
 
-    //TODO: Archive variables (static) required to pass info from within ForEach function to class. Somehow remove these.
-    private static ArrayList<IRowCheckResult> rowCheckResultArchive = new ArrayList<IRowCheckResult>();
-    private static ArrayList<Boolean> rowCheckValidityArchive = new ArrayList<Boolean>();
-    private static long datasetSize;
-    private static ServerRequestResult resultArchive = null;
-
     public ServerRequest(VioletingRowPolicy violetingRowPolicy)
     {
         this.violetingRowPolicy = violetingRowPolicy;
@@ -37,57 +33,36 @@ public class ServerRequest implements Serializable{
         requestResult = new ServerRequestResult();
 
         Dataset<Row> dataset = targetProfile.getDataset();
-
-        datasetSize = dataset.count();
-
-        dataset.foreach(row -> { executeRowChecks(row); });
-
+        Dataset<String> stringResult = dataset.map((MapFunction<Row, String>) row -> { return executeRowChecks(row); }
+                                                    , Encoders.STRING());
+        Dataset<Row> formattedResult = stringResult.withColumn("values", functions.split(stringResult.col("value"), ","));
+        
+        ArrayList<String> rowCheckTypes = new ArrayList<>();
         for (int i = 0; i < rowChecks.size(); i++)
         {
-            IRowCheckResult res = rowCheckResultArchive.get(i);
-            res.setValidity(rowCheckValidityArchive.get(i));
-
-            rowChecks.get(i).setCheckResult(res);
-            requestResult.addRowCheckResult(res);
+            rowCheckTypes.add(rowChecks.get(i).getCheckType());
+            formattedResult = formattedResult.withColumn("c" + i, formattedResult.col("values").getItem(i));
         }
-        requestResult.setRejectedRows(resultArchive.getRejectedRows());
-        requestResult.setInvalidRows(resultArchive.getInvalidRows());
+        formattedResult = formattedResult.withColumn("id", functions.monotonically_increasing_id());
+        
+        requestResult.applyRowCheckResults(formattedResult, rowCheckTypes);
 
         return requestResult;
     }
 
-    private void executeRowChecks(Row row)
+    private String executeRowChecks(Row row)
     { 
-        for (IRowCheck rowCheck: rowChecks)
+        String result = "";
+        for (IRowCheck check : rowChecks)
         {
-            CheckResult result = rowCheck.check(row, violetingRowPolicy);
+            CheckResult rowResult = check.check(row); 
+            result += rowResult + ",";
 
-            if (result == CheckResult.PASSED)
-            {
-                continue;
-            }
-            else if (result == CheckResult.FAILED)
-            {
-                requestResult.increaseRejectedRows();
-            }
-            else
-            {
-                requestResult.increaseInvalidRows();
-            }
+            if (rowResult == CheckResult.FAILED) { requestResult.increaseRejectedRows(); }
+            else if (rowResult != CheckResult.PASSED) { requestResult.increaseInvalidRows(); }
         }
 
-        datasetSize--;
-        if (datasetSize == 0)
-        {
-            rowCheckResultArchive.clear();
-            rowCheckValidityArchive.clear();
-            for (int i = 0; i < rowChecks.size(); i++)
-            {
-                rowCheckResultArchive.add(rowChecks.get(i).getCheckResult());
-                rowCheckValidityArchive.add(rowChecks.get(i).getCheckResult().isSuccesful());
-            }
-            resultArchive = requestResult;
-        }
+        return result.substring(0, result.length()-1);
     }
 
     public void addRowCheck(IRowCheck check) { rowChecks.add(check); }

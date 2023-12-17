@@ -1,15 +1,13 @@
 package rowchecks;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import utils.CheckResult;
-import utils.VioletingRowPolicy;
 
 import org.apache.spark.sql.Row;
 
-import model.rowcheckresults.RowResultFactory;
-
-public class DomainValuesCheck extends GenericRowCheck {
+public class DomainValuesCheck implements IRowCheck, Serializable {
 
     private ArrayList<String> domainValues;
     private String targetColumn;
@@ -18,30 +16,30 @@ public class DomainValuesCheck extends GenericRowCheck {
     {
         this.domainValues = new ArrayList<String>(Arrays.asList(domainValues));
         this.targetColumn = targetColumn;
-        checkResult = new RowResultFactory().createDomainValuesCheckResult(targetColumn);
     }
 
-    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy) 
+    public CheckResult check(Row row) 
     {
         try
         {
             if (domainValues.contains(row.getString(row.fieldIndex(targetColumn))))
             {
-                addApprovedRow(row, violetingRowPolicy);
                 return CheckResult.PASSED;
             } 
         }
         catch (IllegalArgumentException e)
         {
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.ILLEGAL_FIELD;
         }
         catch (NullPointerException e)
         {
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.MISSING_VALUE;
         }
-        addRejectedRow(row, violetingRowPolicy);
         return CheckResult.FAILED;
+    }
+
+    public String getCheckType()
+    {
+        return "Domain Values On " + targetColumn;
     }
 }

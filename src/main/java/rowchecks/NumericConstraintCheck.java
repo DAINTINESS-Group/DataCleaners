@@ -1,12 +1,12 @@
 package rowchecks;
 
+import java.io.Serializable;
+
 import org.apache.spark.sql.Row;
 
-import model.rowcheckresults.RowResultFactory;
 import utils.CheckResult;
-import utils.VioletingRowPolicy;
 
-public class NumericConstraintCheck extends GenericRowCheck{
+public class NumericConstraintCheck implements IRowCheck, Serializable{
 
     private String targetColumn;
     private double minValue = Double.NEGATIVE_INFINITY;
@@ -27,11 +27,9 @@ public class NumericConstraintCheck extends GenericRowCheck{
         this.maxValue = maxValue;
         this.isLeftInclusive = includeMinValue;
         this.isRightInclusive = includeMaxValue;
-        this.checkResult = new RowResultFactory().createNumericConstraintCheckResult(targetColumn, minValue,
-                                                                maxValue, isLeftInclusive, isRightInclusive);
     }
 
-    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy) {
+    public CheckResult check(Row row) {
         double targetValue;
         try
         {
@@ -39,17 +37,14 @@ public class NumericConstraintCheck extends GenericRowCheck{
         }
         catch (NumberFormatException e)
         {
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.FAILED;
         }
         catch (IllegalArgumentException e)
         {
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.ILLEGAL_FIELD;
         }
         catch (NullPointerException e)
         {
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.MISSING_VALUE;
         }
 
@@ -58,12 +53,18 @@ public class NumericConstraintCheck extends GenericRowCheck{
             || (isLeftInclusive && !isRightInclusive && targetValue >= minValue && targetValue < maxValue)
             || (!isLeftInclusive && !isRightInclusive && targetValue > minValue && targetValue < maxValue))
         { 
-            addApprovedRow(row, violetingRowPolicy);
             return CheckResult.PASSED;
         }
 
-        addRejectedRow(row, violetingRowPolicy);
         return CheckResult.FAILED;
     }
 
+    public String getCheckType()
+    {
+        String ret =  "Numeric Constraint Check On " + targetColumn + ":";
+        ret += isLeftInclusive ? "[" : "(";
+        ret += minValue + "," + maxValue;
+        ret += isRightInclusive ? "]" : ")";
+        return ret;
+    }
 }

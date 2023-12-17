@@ -1,37 +1,37 @@
 package rowchecks;
 
+import java.io.Serializable;
+
 import org.apache.spark.sql.Row;
 
-import model.rowcheckresults.RowResultFactory;
 import utils.CheckResult;
-import utils.VioletingRowPolicy;
 
-public class NotNullCheck extends GenericRowCheck {
+public class NotNullCheck implements IRowCheck, Serializable {
 
     private String targetColumn;
 
     public NotNullCheck(String targetColumn)
     {
         this.targetColumn = targetColumn;
-        checkResult = new RowResultFactory().createNotNullCheckResult(targetColumn);
     }
 
-    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy) {
+    public CheckResult check(Row row) {
         try
         {
             if (row.isNullAt(row.fieldIndex(targetColumn)))
             {
-                addRejectedRow(row, violetingRowPolicy);
                 return CheckResult.FAILED;
             }
-            addApprovedRow(row, violetingRowPolicy);
             return CheckResult.PASSED;
         }
         catch (IllegalArgumentException e)
         {
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.ILLEGAL_FIELD;
         }
     }
     
+    public String getCheckType()
+    {
+        return "Null Check On " + targetColumn;
+    }
 }

@@ -11,7 +11,6 @@ import org.junit.Before;
 
 import config.SparkConfig;
 import utils.CheckResult;
-import utils.VioletingRowPolicy;
 
 public abstract class RowCheckTest {
     SparkSession spark;
@@ -33,7 +32,7 @@ public abstract class RowCheckTest {
     {
         for (IRowCheck c : rowChecks)
         {
-            assertSame(expectedResult, c.check(row, VioletingRowPolicy.WARN));
+            assertSame(expectedResult, c.check(row));
         } 
     }
 
@@ -41,7 +40,7 @@ public abstract class RowCheckTest {
     {
         for (IRowCheck c : rowChecks)
         {
-            if (c.check(row, VioletingRowPolicy.WARN) == excludedResult)
+            if (c.check(row) == excludedResult)
             {
                 excludedRows.add(row);
             }

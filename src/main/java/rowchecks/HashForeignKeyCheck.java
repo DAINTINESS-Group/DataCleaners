@@ -1,26 +1,25 @@
 package rowchecks;
 
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import model.rowcheckresults.IRowCheckResult;
 import utils.CheckResult;
-import utils.VioletingRowPolicy;
 
-public class HashForeignKeyCheck implements IRowCheck{
+public class HashForeignKeyCheck implements IRowCheck, Serializable{
 
     private HashSet<String> keys;
     private String targetColumn;
-    
-    private IRowCheckResult checkResult;
-    
+    private String foreinKeyColumn;
+
     public HashForeignKeyCheck(String targetColumn, Dataset<Row> foreignKeyDataset, String foreignKeyColumn)
     {
         this.targetColumn = targetColumn;
+        this.foreinKeyColumn = foreignKeyColumn;
 
         keys = new HashSet<String>();
         List<Row> lr = foreignKeyDataset.select(foreignKeyColumn).distinct().collectAsList();
@@ -30,7 +29,7 @@ public class HashForeignKeyCheck implements IRowCheck{
         }
     }
 
-    public CheckResult check(Row row,  VioletingRowPolicy violetingRowPolicy) {
+    public CheckResult check(Row row) {
         try
         {
             if (keys.contains(row.getString(row.fieldIndex(targetColumn)))) return CheckResult.PASSED;
@@ -46,14 +45,9 @@ public class HashForeignKeyCheck implements IRowCheck{
         return CheckResult.FAILED;
     }
 
-    public IRowCheckResult getCheckResult()
+    public String getCheckType()
     {
-        return checkResult;
-    }
-
-    public void setCheckResult(IRowCheckResult result)
-    {
-        checkResult = result;
+        return "Foreign Check On " + targetColumn + "->" + foreinKeyColumn;
     }
     
 }

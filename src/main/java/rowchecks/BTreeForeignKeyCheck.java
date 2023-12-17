@@ -10,13 +10,11 @@ import btree4j.BTree;
 import btree4j.BTreeException;
 import btree4j.Value;
 import btree4j.utils.io.FileUtils;
-import model.rowcheckresults.RowResultFactory;
 import utils.CheckResult;
-import utils.VioletingRowPolicy;
 
 
 
-public class BTreeForeignKeyCheck extends GenericRowCheck {
+public class BTreeForeignKeyCheck implements IRowCheck {
  
     private static class ForEachInserter implements ForeachFunction<Row>
     {
@@ -43,7 +41,6 @@ public class BTreeForeignKeyCheck extends GenericRowCheck {
     {
         this.targetColumn = targetColumn;
         this.foreignKeyColumn = foreignKeyColumn;
-        this.checkResult = new RowResultFactory().createForeignKeyCheckResult(targetColumn, foreignKeyColumn);
         try
         { 
             File tempDir = FileUtils.getTempDir();
@@ -63,29 +60,30 @@ public class BTreeForeignKeyCheck extends GenericRowCheck {
         }
     }
 
-    public CheckResult check(Row row, VioletingRowPolicy violetingRowPolicy)
+    public CheckResult check(Row row)
     {
         String targetValue = row.getString(row.fieldIndex(targetColumn));
         try
         {
             if (btree.findValue(new Value(targetValue)) == 1)
             {
-                addApprovedRow(row, violetingRowPolicy);
                 return CheckResult.PASSED;
             }
         }
         catch (BTreeException e)
         {
             System.err.println(e);
-            addInvalidRow(row, violetingRowPolicy);
             return CheckResult.INTERNAL_ERROR;
         }
         catch (NullPointerException e)
         {
-            addRejectedRow(row, violetingRowPolicy);
             return CheckResult.FAILED; //TODO: If value is NULL, do we fail it? 
         }
-        addRejectedRow(row, violetingRowPolicy);
         return CheckResult.FAILED;
+    }
+
+    public String getCheckType()
+    {
+        return "";
     }
 }

@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.functions;
 
 import config.SparkConfig;
 import model.ClientRequest;
@@ -34,7 +35,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
         {
             if (existsProfileWithAlias(alias)) return RegistrationResponse.ALIAS_EXISTS;
 
-            Dataset<Row> df = spark.read().option("header",hasHeader).csv(path);
+            Dataset<Row> df = spark.read().option("header",hasHeader).csv(path).withColumn("_id", functions.monotonically_increasing_id());
             DatasetProfile profile = new DatasetProfile(alias, df, path);
             datasetProfiles.add(profile);
 
@@ -59,7 +60,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
             properties.setProperty("username", username);
             properties.setProperty("password", password);
             
-            Dataset<Row> df = spark.read().jdbc(url, tableName, properties);
+            Dataset<Row> df = spark.read().jdbc(url, tableName, properties).withColumn("_id", functions.monotonically_increasing_id());
            
             DatasetProfile profile = new DatasetProfile(alias, df, "DATABASE");
             datasetProfiles.add(profile);
