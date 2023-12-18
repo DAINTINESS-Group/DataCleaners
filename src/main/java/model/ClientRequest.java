@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import utils.VioletingRowPolicy;
 
 public class ClientRequest {
-    
-    private final static Builder builder = new Builder();
 
     private String targetDataset;
     private ArrayList<ForeignKeySettings> foreignKeyChecks;
@@ -65,7 +63,10 @@ public class ClientRequest {
     }
 
 
-    public static Builder builder() { return builder; }
+    public static Builder builder() 
+    { 
+        return new Builder();
+    }
 
     public static class Builder
     {
