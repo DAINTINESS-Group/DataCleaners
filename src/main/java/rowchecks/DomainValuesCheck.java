@@ -3,9 +3,10 @@ package rowchecks;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import utils.CheckResult;
 
 import org.apache.spark.sql.Row;
+
+import utils.CheckResult;
 
 public class DomainValuesCheck implements IRowCheck, Serializable {
 

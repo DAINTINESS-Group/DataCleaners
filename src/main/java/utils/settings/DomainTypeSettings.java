@@ -1,4 +1,6 @@
-package utils;
+package utils.settings;
+
+import utils.DomainType;
 
 public class DomainTypeSettings {
     

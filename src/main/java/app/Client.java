@@ -14,16 +14,19 @@ public class Client {
 
     public static void main(String[] args)
     {
+        
         IDataCleanerFacade facade;
         FacadeFactory facadeFactory = new FacadeFactory();
 
         facade = facadeFactory.createDataCleanerFacade();
 
-        facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame1", true);
+        facade.registerDataset("src\\test\\resources\\datasets\\cars_100k.csv", "frame1", true);
         facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame2", true);
         
         ClientRequest req = ClientRequest.builder()
                             .onDataset("frame1")
+                            .withPrimaryKeys("model")
+                            .withPrimaryKeys("manufacturer")
                             .withForeignKeys("manufacturer", "frame2", "manufacturer")
                             .withNumericColumn("price", 0, 20_000)
                             .withColumnType("price", DomainType.INTEGER)
@@ -41,6 +44,8 @@ public class Client {
         System.out.println("Rejected Rows: " + response.getNumberOfRejectedRows());
         System.out.println("Invalid Rows: " + response.getNumberOfInvalidRows());
   
+        //facade.generateReportFromProfile("frame1", "C:\\Users\\nikos\\Desktop\\report.txt");
+        
     }
 
 

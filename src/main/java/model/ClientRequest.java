@@ -2,17 +2,19 @@ package model;
 
 import java.util.ArrayList;
 
- import utils.DomainType;
- import utils.DomainTypeSettings;
- import utils.DomainValueSettings;
- import utils.ForeignKeySettings;
- import utils.NotNullSettings;
- import utils.NumberConstraintSettings;
+import utils.DomainType;
 import utils.VioletingRowPolicy;
+import utils.settings.DomainTypeSettings;
+import utils.settings.DomainValueSettings;
+import utils.settings.ForeignKeySettings;
+import utils.settings.NotNullSettings;
+import utils.settings.NumberConstraintSettings;
+import utils.settings.PrimaryKeySettings;
 
 public class ClientRequest {
 
     private String targetDataset;
+    private ArrayList<PrimaryKeySettings> primaryKeyChecks;
     private ArrayList<ForeignKeySettings> foreignKeyChecks;
     private ArrayList<DomainTypeSettings> domainTypeChecks;
     private ArrayList<DomainValueSettings> domainValueChecks;
@@ -24,6 +26,7 @@ public class ClientRequest {
     private ClientRequest(Builder builder)
     {
         targetDataset = builder.targetDataset;
+        primaryKeyChecks = builder.primaryKeyChecks;
         foreignKeyChecks = builder.foreignKeyChecks;
         domainTypeChecks = builder.domainTypeChecks;
         domainValueChecks = builder.domainValueChecks;
@@ -35,6 +38,11 @@ public class ClientRequest {
 
     public String getTargetDataset() {
         return targetDataset;
+    }
+
+    public ArrayList<PrimaryKeySettings> getPrimaryKeyChecks()
+    {
+        return primaryKeyChecks;
     }
 
     public ArrayList<ForeignKeySettings> getForeignKeyChecks() {
@@ -71,6 +79,7 @@ public class ClientRequest {
     public static class Builder
     {
         String targetDataset = null;
+        ArrayList<PrimaryKeySettings> primaryKeyChecks = new ArrayList<PrimaryKeySettings>();
         ArrayList<ForeignKeySettings> foreignKeyChecks = new ArrayList<ForeignKeySettings>();
         ArrayList<DomainTypeSettings> domainTypeChecks = new ArrayList<DomainTypeSettings>();
         ArrayList<DomainValueSettings> domainValueChecks = new ArrayList<DomainValueSettings>();
@@ -83,6 +92,12 @@ public class ClientRequest {
         public Builder onDataset(String datasetName)
         {
             targetDataset = datasetName;
+            return this;
+        }
+
+        public Builder withPrimaryKeys(String targetColumn)
+        {
+            primaryKeyChecks.add(new PrimaryKeySettings(targetColumn));
             return this;
         }
 

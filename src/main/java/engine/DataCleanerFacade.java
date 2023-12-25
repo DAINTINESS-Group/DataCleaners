@@ -7,6 +7,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
+import org.apache.spark.sql.expressions.Window;
 
 import config.SparkConfig;
 import model.ClientRequest;
@@ -35,7 +36,8 @@ public class DataCleanerFacade implements IDataCleanerFacade {
         {
             if (existsProfileWithAlias(alias)) return RegistrationResponse.ALIAS_EXISTS;
 
-            Dataset<Row> df = spark.read().option("header",hasHeader).csv(path).withColumn("_id", functions.monotonically_increasing_id());
+            Dataset<Row> df = spark.read().option("header",hasHeader).csv(path)
+                                    .withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
             DatasetProfile profile = new DatasetProfile(alias, df, path);
             datasetProfiles.add(profile);
 
@@ -60,8 +62,8 @@ public class DataCleanerFacade implements IDataCleanerFacade {
             properties.setProperty("username", username);
             properties.setProperty("password", password);
             
-            Dataset<Row> df = spark.read().jdbc(url, tableName, properties).withColumn("_id", functions.monotonically_increasing_id());
-           
+            Dataset<Row> df = spark.read().jdbc(url, tableName, properties)
+                                .withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
             DatasetProfile profile = new DatasetProfile(alias, df, "DATABASE");
             datasetProfiles.add(profile);
             return RegistrationResponse.SUCCESS;
@@ -111,7 +113,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
         }
         return false;
     }
-
+    //TO-DO: Add error catching when profile doesnt exist?
     private DatasetProfile getProfile(String alias)
     {
         for (DatasetProfile profile : datasetProfiles)

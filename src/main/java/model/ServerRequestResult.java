@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.storage.StorageLevel;
 
 public class ServerRequestResult implements Serializable{
     
@@ -16,9 +17,11 @@ public class ServerRequestResult implements Serializable{
 
     public void applyRowCheckResults(Dataset<Row> rowCheckResults, ArrayList<String> rowCheckTypes) 
     {
+        //Persist data due to lazy evaluation and BPlusTree Interaction.
+        rowCheckResults = rowCheckResults.persist(StorageLevel.MEMORY_AND_DISK());
         rejectedRows = rowCheckResults.where("value LIKE '%FAILED%'").count();
         invalidRows = rowCheckResults.where("value LIKE '%MISSING_VALUE%' OR value LIKE '%ILLEGAL_FIELD%' OR value LIKE '%INTERNAL_ERROR%'").count();
-        this.rowCheckResults = rowCheckResults.drop("value").drop("values");
+        this.rowCheckResults = rowCheckResults.drop("value", "values");
         this.rowCheckTypes = rowCheckTypes;
     }
 

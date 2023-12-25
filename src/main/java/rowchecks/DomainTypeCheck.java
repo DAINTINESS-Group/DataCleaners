@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import org.apache.spark.sql.Row;
 
-import utils.DomainType;
 import utils.CheckResult;
+import utils.DomainType;
 
 public class DomainTypeCheck implements IRowCheck, Serializable {
 

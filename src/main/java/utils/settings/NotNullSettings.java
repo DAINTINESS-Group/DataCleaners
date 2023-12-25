@@ -1,4 +1,4 @@
-package utils;
+package utils.settings;
 
 public class NotNullSettings {
     

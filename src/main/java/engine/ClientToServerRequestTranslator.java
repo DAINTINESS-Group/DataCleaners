@@ -7,12 +7,12 @@ import model.DatasetProfile;
 import model.ServerRequest;
 import rowchecks.IRowCheck;
 import rowchecks.RowCheckFactory;
-
-import utils.DomainTypeSettings;
-import utils.DomainValueSettings;
-import utils.ForeignKeySettings;
-import utils.NotNullSettings;
-import utils.NumberConstraintSettings;
+import utils.settings.DomainTypeSettings;
+import utils.settings.DomainValueSettings;
+import utils.settings.ForeignKeySettings;
+import utils.settings.NotNullSettings;
+import utils.settings.NumberConstraintSettings;
+import utils.settings.PrimaryKeySettings;
 
 public class ClientToServerRequestTranslator {
 
@@ -27,6 +27,11 @@ public class ClientToServerRequestTranslator {
 	{
 		ArrayList<IRowCheck> checks = new ArrayList<IRowCheck>();
 		RowCheckFactory factory = new RowCheckFactory(profiles);
+
+		for (PrimaryKeySettings pkSettings : order.getPrimaryKeyChecks())
+		{
+			checks.add(factory.createPrimaryKeyCheck(pkSettings));
+		}
 
 		for (ForeignKeySettings fkSettings : order.getForeignKeyChecks())
 		{		

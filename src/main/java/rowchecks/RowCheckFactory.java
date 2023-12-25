@@ -6,11 +6,12 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import model.DatasetProfile;
-import utils.DomainTypeSettings;
-import utils.DomainValueSettings;
-import utils.ForeignKeySettings;
-import utils.NotNullSettings;
-import utils.NumberConstraintSettings;
+import utils.settings.DomainTypeSettings;
+import utils.settings.DomainValueSettings;
+import utils.settings.ForeignKeySettings;
+import utils.settings.NotNullSettings;
+import utils.settings.NumberConstraintSettings;
+import utils.settings.PrimaryKeySettings;
 
 //TODO add defensive code for null parameters
 public class RowCheckFactory {
@@ -19,6 +20,11 @@ public class RowCheckFactory {
 	public RowCheckFactory(ArrayList<DatasetProfile> profiles)
 	{
 		this.profiles = profiles;
+	}
+
+	public IRowCheck createPrimaryKeyCheck(PrimaryKeySettings pkSettings)
+	{
+		return new BPlusTreePrimaryKeyCheck(pkSettings.getTargetColumn());
 	}
 
 	public IRowCheck createDomainTypeCheck(DomainTypeSettings dtSettings) {

@@ -8,6 +8,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
+import org.apache.spark.sql.expressions.Window;
 
 import rowchecks.IRowCheck;
 import utils.CheckResult;
@@ -43,8 +44,7 @@ public class ServerRequest implements Serializable{
             rowCheckTypes.add(rowChecks.get(i).getCheckType());
             formattedResult = formattedResult.withColumn("c" + i, formattedResult.col("values").getItem(i));
         }
-        formattedResult = formattedResult.withColumn("id", functions.monotonically_increasing_id());
-        
+        formattedResult = formattedResult.withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
         requestResult.applyRowCheckResults(formattedResult, rowCheckTypes);
 
         return requestResult;
@@ -61,7 +61,6 @@ public class ServerRequest implements Serializable{
             if (rowResult == CheckResult.FAILED) { requestResult.increaseRejectedRows(); }
             else if (rowResult != CheckResult.PASSED) { requestResult.increaseInvalidRows(); }
         }
-
         return result.substring(0, result.length()-1);
     }
 
