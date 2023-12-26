@@ -10,6 +10,7 @@ import rowchecks.RowCheckFactory;
 import utils.settings.DomainTypeSettings;
 import utils.settings.DomainValueSettings;
 import utils.settings.ForeignKeySettings;
+import utils.settings.FormatSettings;
 import utils.settings.NotNullSettings;
 import utils.settings.NumberConstraintSettings;
 import utils.settings.PrimaryKeySettings;
@@ -36,6 +37,11 @@ public class ClientToServerRequestTranslator {
 		for (ForeignKeySettings fkSettings : order.getForeignKeyChecks())
 		{		
 			checks.add(factory.createBTreeForeignKeyCheck(fkSettings));
+		}
+
+		for (FormatSettings fSettings : order.getFormatChecks())
+		{
+			checks.add(factory.createFormatCheck(fSettings));
 		}
 
 		for (DomainTypeSettings dtSettings : order.getDomainTypeChecks())

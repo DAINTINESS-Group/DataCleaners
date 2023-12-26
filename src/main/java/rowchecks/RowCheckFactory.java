@@ -9,6 +9,7 @@ import model.DatasetProfile;
 import utils.settings.DomainTypeSettings;
 import utils.settings.DomainValueSettings;
 import utils.settings.ForeignKeySettings;
+import utils.settings.FormatSettings;
 import utils.settings.NotNullSettings;
 import utils.settings.NumberConstraintSettings;
 import utils.settings.PrimaryKeySettings;
@@ -25,6 +26,11 @@ public class RowCheckFactory {
 	public IRowCheck createPrimaryKeyCheck(PrimaryKeySettings pkSettings)
 	{
 		return new BPlusTreePrimaryKeyCheck(pkSettings.getTargetColumn());
+	}
+
+	public IRowCheck createFormatCheck(FormatSettings fSettings)
+	{
+		return new FormatCheck(fSettings.getTargetColumn(), fSettings.getType(), fSettings.getDelimeter());
 	}
 
 	public IRowCheck createDomainTypeCheck(DomainTypeSettings dtSettings) {

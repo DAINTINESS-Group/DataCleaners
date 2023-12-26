@@ -20,20 +20,21 @@ public class Client {
 
         facade = facadeFactory.createDataCleanerFacade();
 
-        facade.registerDataset("src\\test\\resources\\datasets\\cars_100k.csv", "frame1", true);
+        facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame1", true);
         facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame2", true);
         
         ClientRequest req = ClientRequest.builder()
                             .onDataset("frame1")
-                            .withPrimaryKeys("model")
-                            .withPrimaryKeys("manufacturer")
+                            .withColumnType("engineSize", DomainType.NUMERIC)
+                            //.withFormat("date", FormatType.MM_YYYY, "-") /* USE THIS ON PROPER DATASET (ex. test) */
+                            .withPrimaryKeys("price")
                             .withForeignKeys("manufacturer", "frame2", "manufacturer")
                             .withNumericColumn("price", 0, 20_000)
                             .withColumnType("price", DomainType.INTEGER)
                             .withColumnValues("manufacturer", new String[] {"audi"})
                             .withNoNullValues("price")
                             .withColumnType("manufacturer", DomainType.ALPHA)
-                            .withViolationPolicy(VioletingRowPolicy.ISOLATE)
+                            .withViolationPolicy(VioletingRowPolicy.ISOLATE) 
                             .build();
         
         
@@ -43,9 +44,7 @@ public class Client {
         System.out.println("Succesful: " + response.isSuccesful());
         System.out.println("Rejected Rows: " + response.getNumberOfRejectedRows());
         System.out.println("Invalid Rows: " + response.getNumberOfInvalidRows());
-  
-        //facade.generateReportFromProfile("frame1", "C:\\Users\\nikos\\Desktop\\report.txt");
-        
+
     }
 
 

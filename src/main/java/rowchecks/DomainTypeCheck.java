@@ -1,6 +1,7 @@
 package rowchecks;
 
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import org.apache.spark.sql.Row;
 
@@ -11,45 +12,40 @@ public class DomainTypeCheck implements IRowCheck, Serializable {
 
     private String targetColumn;
     private DomainType type;
+    private Pattern regexPattern;
 
     public DomainTypeCheck(String targetColumn, DomainType type)
     {
         this.targetColumn = targetColumn;
         this.type = type;
+
+        String regex;
+        switch (type)
+        {
+            case INTEGER:
+                regex = "^\\d+$";
+                break;
+            case BOOLEAN:
+                regex = "1|0|true|false|no|yes";
+                break;
+            case NUMERIC:
+                regex = "(\\d+|\\d+.\\d+)";
+                break;
+            case ALPHA:
+                regex = ".*[a-zA-Z].*";
+                break;
+            default:
+                regex = null;
+                break;
+        }
+        regexPattern = Pattern.compile(regex, 2);
     }
 
-    //TODO: Upper limit on NUMERIC and INT, ALPHA. Regex?
     public CheckResult check(Row row) {
         try
         {
-            String targetValue = row.getString(row.fieldIndex(targetColumn));
-            switch (type)
-            {
-                case INTEGER:
-                    Integer.parseInt(targetValue);
-                    return CheckResult.PASSED;
-                case BOOLEAN:
-                    if (targetValue.equals("1") || targetValue.equals("0") 
-                        || targetValue.toLowerCase().equals("true") 
-                        || targetValue.toLowerCase().equals("false"))
-                    {
-                        return CheckResult.PASSED;
-                    }
-
-                    return CheckResult.FAILED;
-                case NUMERIC:
-                    Double.parseDouble(targetValue);
-                    return CheckResult.PASSED;
-                case ALPHA:
-                    Double.parseDouble(targetValue);
-                    return CheckResult.FAILED;
-                default:
-                    break;
-            }
-        }
-        catch(NumberFormatException e)
-        {
-            if (type == DomainType.ALPHA)
+            String targetValue = row.getString(row.fieldIndex(targetColumn)).trim();
+            if (regexPattern.matcher(targetValue).find())
             {
                 return CheckResult.PASSED;
             }

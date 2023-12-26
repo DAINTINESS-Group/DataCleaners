@@ -3,10 +3,12 @@ package model;
 import java.util.ArrayList;
 
 import utils.DomainType;
+import utils.FormatType;
 import utils.VioletingRowPolicy;
 import utils.settings.DomainTypeSettings;
 import utils.settings.DomainValueSettings;
 import utils.settings.ForeignKeySettings;
+import utils.settings.FormatSettings;
 import utils.settings.NotNullSettings;
 import utils.settings.NumberConstraintSettings;
 import utils.settings.PrimaryKeySettings;
@@ -16,6 +18,7 @@ public class ClientRequest {
     private String targetDataset;
     private ArrayList<PrimaryKeySettings> primaryKeyChecks;
     private ArrayList<ForeignKeySettings> foreignKeyChecks;
+    private ArrayList<FormatSettings> formatChecks;
     private ArrayList<DomainTypeSettings> domainTypeChecks;
     private ArrayList<DomainValueSettings> domainValueChecks;
     private ArrayList<NotNullSettings> notNullChecks;
@@ -28,6 +31,7 @@ public class ClientRequest {
         targetDataset = builder.targetDataset;
         primaryKeyChecks = builder.primaryKeyChecks;
         foreignKeyChecks = builder.foreignKeyChecks;
+        formatChecks = builder.formatChecks;
         domainTypeChecks = builder.domainTypeChecks;
         domainValueChecks = builder.domainValueChecks;
         notNullChecks = builder.notNullChecks;
@@ -47,6 +51,10 @@ public class ClientRequest {
 
     public ArrayList<ForeignKeySettings> getForeignKeyChecks() {
         return foreignKeyChecks;
+    }
+    
+    public ArrayList<FormatSettings> getFormatChecks() {
+        return formatChecks;
     }
 
     public ArrayList<DomainTypeSettings> getDomainTypeChecks() {
@@ -81,6 +89,7 @@ public class ClientRequest {
         String targetDataset = null;
         ArrayList<PrimaryKeySettings> primaryKeyChecks = new ArrayList<PrimaryKeySettings>();
         ArrayList<ForeignKeySettings> foreignKeyChecks = new ArrayList<ForeignKeySettings>();
+        ArrayList<FormatSettings> formatChecks = new ArrayList<FormatSettings>();
         ArrayList<DomainTypeSettings> domainTypeChecks = new ArrayList<DomainTypeSettings>();
         ArrayList<DomainValueSettings> domainValueChecks = new ArrayList<DomainValueSettings>();
         ArrayList<NotNullSettings> notNullChecks = new ArrayList<NotNullSettings>();
@@ -104,6 +113,18 @@ public class ClientRequest {
         public Builder withForeignKeys(String targetColumn, String foreignKeyDataset, String foreignKeyColumn)
         {   
             foreignKeyChecks.add(new ForeignKeySettings(targetColumn, foreignKeyDataset, foreignKeyColumn));
+            return this;
+        }
+
+        public Builder withFormat(String targetColumn, FormatType type)
+        {
+            formatChecks.add(new FormatSettings(targetColumn, type, "/"));
+            return this;
+        }
+
+        public Builder withFormat(String targetColumn, FormatType type, String delimeter)
+        {
+            formatChecks.add(new FormatSettings(targetColumn, type, delimeter));
             return this;
         }
 
