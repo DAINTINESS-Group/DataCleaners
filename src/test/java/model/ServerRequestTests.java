@@ -40,7 +40,7 @@ public class ServerRequestTests {
         serverRequest.execute();
         ServerRequestResult result = serverRequest.getRequestResult();
         assertEquals(46, result.getRejectedRows());
-        assertEquals(46, result.getRowCheckResults().where("c1 = 'FAILED'").count());
+        assertEquals(46, result.getRowCheckResults().where("c1 = 'REJECTED'").count());
 
         assertEquals(0, result.getInvalidRows());
     }

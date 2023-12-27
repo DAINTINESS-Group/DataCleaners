@@ -42,7 +42,7 @@ public class HashForeignKeyCheck implements IRowCheck, Serializable{
         {
             return CheckResult.MISSING_VALUE;
         }
-        return CheckResult.FAILED;
+        return CheckResult.REJECTED;
     }
 
     public String getCheckType()

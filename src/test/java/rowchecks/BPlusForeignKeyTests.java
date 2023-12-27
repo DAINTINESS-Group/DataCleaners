@@ -23,7 +23,7 @@ public class BPlusForeignKeyTests extends RowCheckTest {
     {
         rowChecks.clear();
         excludedRows.clear();
-        excludedResult = CheckResult.FAILED;
+        excludedResult = CheckResult.REJECTED;
         rowChecks.add(new BPlusTreeForeignKeyCheck("negative_to_positive", testSet2, "values"));
 
         testSet.foreach(row -> { checkRowWithExclusion(row); });

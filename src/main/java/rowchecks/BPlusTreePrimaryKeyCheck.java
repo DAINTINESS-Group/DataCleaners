@@ -39,7 +39,7 @@ public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
                                         .putNoDupData(null, new DatabaseEntry(targetValue.getBytes()), new DatabaseEntry("".getBytes()));
 
             if (status == OperationStatus.SUCCESS) { return CheckResult.PASSED; }
-            else if (status == OperationStatus.KEYEXIST) { return CheckResult.FAILED; }
+            else if (status == OperationStatus.KEYEXIST) { return CheckResult.REJECTED; }
         }
         catch (NullPointerException e)
         {

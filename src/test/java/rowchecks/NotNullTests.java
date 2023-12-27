@@ -15,7 +15,7 @@ public class NotNullTests extends RowCheckTest{
         testSet.foreach(row -> { checkRow(row); });
 
         rowChecks.clear();
-        expectedResult = CheckResult.FAILED;
+        expectedResult = CheckResult.REJECTED;
         rowChecks.add(new NotNullCheck("null"));
         testSet.foreach(row -> { checkRow(row); });
     }

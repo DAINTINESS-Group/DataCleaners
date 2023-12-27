@@ -3,7 +3,7 @@ package utils;
     public enum CheckResult
     {
         PASSED,
-        FAILED,
+        REJECTED,
         MISSING_VALUE,
         ILLEGAL_FIELD,
         INTERNAL_ERROR

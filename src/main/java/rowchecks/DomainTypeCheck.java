@@ -23,13 +23,13 @@ public class DomainTypeCheck implements IRowCheck, Serializable {
         switch (type)
         {
             case INTEGER:
-                regex = "^\\d+$";
+                regex = "^-?\\d+$";
                 break;
             case BOOLEAN:
-                regex = "1|0|true|false|no|yes";
+                regex = "^(1|0|true|false|no|yes)$";
                 break;
             case NUMERIC:
-                regex = "(\\d+|\\d+.\\d+)";
+                regex = "^-?(\\d+|\\d+.\\d+)$";
                 break;
             case ALPHA:
                 regex = ".*[a-zA-Z].*";
@@ -58,7 +58,7 @@ public class DomainTypeCheck implements IRowCheck, Serializable {
         {
             return CheckResult.MISSING_VALUE;
         }
-        return CheckResult.FAILED;
+        return CheckResult.REJECTED;
     }  
 
     public String getCheckType()

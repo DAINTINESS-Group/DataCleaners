@@ -15,7 +15,7 @@ public class FormatTests extends RowCheckTest{
     {
         rowChecks.clear();
         excludedRows.clear();
-        excludedResult = CheckResult.FAILED;
+        excludedResult = CheckResult.REJECTED;
         rowChecks.add(new FormatCheck("date", FormatType.DD_MM_YYYY, "-"));
         rowChecks.add(new FormatCheck("date", FormatType.DD_MM, "-"));
         rowChecks.add(new FormatCheck("date", FormatType.MM_DD, "-"));
@@ -34,7 +34,7 @@ public class FormatTests extends RowCheckTest{
     {
         rowChecks.clear();
         excludedRows.clear();
-        excludedResult = CheckResult.FAILED;
+        excludedResult = CheckResult.REJECTED;
         rowChecks.add(new FormatCheck("date", FormatType.DD_MM_YYYY, "1234"));
 
         testSet.foreach(row -> { checkRowWithExclusion(row); });

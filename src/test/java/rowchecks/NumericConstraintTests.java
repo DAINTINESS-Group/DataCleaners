@@ -18,7 +18,7 @@ public class NumericConstraintTests extends RowCheckTest {
         testSet.foreach(row -> { checkRow(row); });
 
         excludedRows.clear();
-        excludedResult = CheckResult.FAILED;
+        excludedResult = CheckResult.REJECTED;
         rowChecks.add(new NumericConstraintCheck("negative_to_positive", -100, 100, false, false));
         testSet.foreach(row -> { checkRowWithExclusion(row); });
         assertEquals(1,excludedRows.size());
@@ -28,7 +28,7 @@ public class NumericConstraintTests extends RowCheckTest {
     public void numericConstraintBadDayTest()
     {
         rowChecks.clear();
-        expectedResult = CheckResult.FAILED;
+        expectedResult = CheckResult.REJECTED;
         
         rowChecks.add(new NumericConstraintCheck("name", -1, 1, false, false));
         testSet.foreach(row -> { checkRow(row);});

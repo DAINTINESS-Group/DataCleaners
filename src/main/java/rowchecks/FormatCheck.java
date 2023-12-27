@@ -68,7 +68,7 @@ public class FormatCheck implements IRowCheck, Serializable {
         {
             return CheckResult.MISSING_VALUE;
         }
-        return CheckResult.FAILED;
+        return CheckResult.REJECTED;
     }
 
     @Override

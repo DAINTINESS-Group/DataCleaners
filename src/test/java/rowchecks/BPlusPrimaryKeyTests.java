@@ -22,7 +22,7 @@ public class BPlusPrimaryKeyTests extends RowCheckTest {
     public void primaryKeyBadDayTest()
     {
         rowChecks.clear();
-        excludedResult = CheckResult.FAILED;
+        excludedResult = CheckResult.REJECTED;
         rowChecks.add(new BPlusTreePrimaryKeyCheck("name"));
 
         testSet.foreach(row -> { checkRowWithExclusion(row);});

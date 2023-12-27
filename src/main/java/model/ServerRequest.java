@@ -58,7 +58,7 @@ public class ServerRequest implements Serializable{
             CheckResult rowResult = check.check(row); 
             result += rowResult + ",";
 
-            if (rowResult == CheckResult.FAILED) { requestResult.increaseRejectedRows(); }
+            if (rowResult == CheckResult.REJECTED) { requestResult.increaseRejectedRows(); }
             else if (rowResult != CheckResult.PASSED) { requestResult.increaseInvalidRows(); }
         }
         return result.substring(0, result.length()-1);

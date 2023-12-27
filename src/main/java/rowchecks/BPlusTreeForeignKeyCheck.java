@@ -62,7 +62,7 @@ public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
         {
             return CheckResult.MISSING_VALUE;
         }
-        return CheckResult.FAILED;
+        return CheckResult.REJECTED;
     }
 
     private void insertForeignKey(Row row)

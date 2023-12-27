@@ -37,7 +37,7 @@ public class NumericConstraintCheck implements IRowCheck, Serializable{
         }
         catch (NumberFormatException e)
         {
-            return CheckResult.FAILED;
+            return CheckResult.REJECTED;
         }
         catch (IllegalArgumentException e)
         {
@@ -56,7 +56,7 @@ public class NumericConstraintCheck implements IRowCheck, Serializable{
             return CheckResult.PASSED;
         }
 
-        return CheckResult.FAILED;
+        return CheckResult.REJECTED;
     }
 
     public String getCheckType()

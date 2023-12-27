@@ -25,7 +25,7 @@ public class DomainTypeTests extends RowCheckTest {
     public void domainTypeBadDayTest()
     {
         rowChecks.clear();
-        expectedResult = CheckResult.FAILED;
+        expectedResult = CheckResult.REJECTED;
         rowChecks.add(new DomainTypeCheck("float",DomainType.ALPHA));
         rowChecks.add(new DomainTypeCheck("name",DomainType.INTEGER));
         rowChecks.add(new DomainTypeCheck("name",DomainType.NUMERIC));

@@ -19,7 +19,7 @@ public class ServerRequestResult implements Serializable{
     {
         //Persist data due to lazy evaluation and BPlusTree Interaction.
         rowCheckResults = rowCheckResults.persist(StorageLevel.MEMORY_AND_DISK());
-        rejectedRows = rowCheckResults.where("value LIKE '%FAILED%'").count();
+        rejectedRows = rowCheckResults.where("value LIKE '%REJECTED%'").count();
         invalidRows = rowCheckResults.where("value LIKE '%MISSING_VALUE%' OR value LIKE '%ILLEGAL_FIELD%' OR value LIKE '%INTERNAL_ERROR%'").count();
         this.rowCheckResults = rowCheckResults.drop("value", "values");
         this.rowCheckTypes = rowCheckTypes;

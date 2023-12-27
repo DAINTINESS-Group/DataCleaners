@@ -20,7 +20,7 @@ public class NotNullCheck implements IRowCheck, Serializable {
         {
             if (row.isNullAt(row.fieldIndex(targetColumn)))
             {
-                return CheckResult.FAILED;
+                return CheckResult.REJECTED;
             }
             return CheckResult.PASSED;
         }

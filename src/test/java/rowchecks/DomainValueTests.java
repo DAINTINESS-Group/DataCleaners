@@ -21,7 +21,7 @@ public class DomainValueTests extends RowCheckTest {
         rowChecks.clear();
         rowChecks.add(new DomainValuesCheck("name", new String[] {"Connor"}));
 
-        excludedResult = CheckResult.FAILED;
+        excludedResult = CheckResult.REJECTED;
         testSet.foreach(row -> { checkRowWithExclusion(row); });
         assertEquals(excludedRows.size(),98);
     }
@@ -30,7 +30,7 @@ public class DomainValueTests extends RowCheckTest {
     public void domainValuesBadDayTest()
     {
         rowChecks.clear();
-        expectedResult = CheckResult.FAILED;
+        expectedResult = CheckResult.REJECTED;
         rowChecks.add(new DomainValuesCheck("null", new String[] {"null"}));
         testSet.foreach(row -> { checkRow(row); });
     }
