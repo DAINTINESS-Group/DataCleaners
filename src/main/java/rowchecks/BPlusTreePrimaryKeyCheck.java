@@ -17,7 +17,7 @@ public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
     private String targetColumn;
     private String dbName;
 
-    private BPlusTreeWrapper btreeWrapper;
+    private BPlusTreeWrapper bTreeWrapper;
 
     public BPlusTreePrimaryKeyCheck(String targetColumn)
     {
@@ -25,17 +25,17 @@ public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
         this.dbName = "PKDB" + globalIdCounter;
         globalIdCounter++;
 
-        btreeWrapper = new BPlusTreeWrapper(dbName);
+        bTreeWrapper = new BPlusTreeWrapper(dbName);
     }
 
     public CheckResult check(Row row) 
     {
-        if (btreeWrapper.getBPlusTree() == null) { btreeWrapper.initDatabase(); }
+        if (bTreeWrapper.getBPlusTree() == null) { bTreeWrapper.initDatabase(true); }
         try
         {
             String targetValue = row.getString(row.fieldIndex(targetColumn));
             
-            OperationStatus status = btreeWrapper.getBPlusTree()
+            OperationStatus status = bTreeWrapper.getBPlusTree()
                                         .putNoDupData(null, new DatabaseEntry(targetValue.getBytes()), new DatabaseEntry("".getBytes()));
 
             if (status == OperationStatus.SUCCESS) { return CheckResult.PASSED; }

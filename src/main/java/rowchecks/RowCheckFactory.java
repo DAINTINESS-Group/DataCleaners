@@ -63,7 +63,7 @@ public class RowCheckFactory {
 			}
 		}
 
-		return new HashForeignKeyCheck(fkSettings.getTargetColumn(), 
+		return new BPlusTreeForeignKeyCheck(fkSettings.getTargetColumn(), 
 										df,
 										fkSettings.getForeignKeyColumn());
 	}

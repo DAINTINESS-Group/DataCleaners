@@ -20,11 +20,11 @@ public class BPlusTreeWrapper implements Serializable{
         this.dbName = dbName;
     }
 
-    public void initDatabase()
+    public void initDatabase(boolean purgePreviousDatabase)
     {
         try
         { 
-            File tmpFile = purgeDatabase();
+            File tmpFile = getDatabaseFile(purgePreviousDatabase);
 
             EnvironmentConfig envConfig = new EnvironmentConfig();
             envConfig.setAllowCreate(true);
@@ -44,10 +44,12 @@ public class BPlusTreeWrapper implements Serializable{
         }
     }
 
-    private File purgeDatabase()
+    private File getDatabaseFile(boolean purgePreviousDatabase)
     {
         File tempDir = FileUtils.getTempDir();
         File tmpFile = new File(tempDir, dbName);
+        if (!purgePreviousDatabase) return tmpFile;
+
         if (tmpFile.exists())
         {   
             for (File f : tmpFile.listFiles())
