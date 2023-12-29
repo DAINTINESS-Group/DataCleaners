@@ -14,8 +14,8 @@ import utils.CheckResult;
 
 public abstract class RowCheckTest {
     SparkSession spark;
-    static Dataset<Row> testSet;
-    static Dataset<Row> testSet2;
+    protected static Dataset<Row> testSet;
+    protected static Dataset<Row> testSet2;
 
     static ArrayList<IRowCheck> rowChecks = new ArrayList<IRowCheck>();
     static ArrayList<Row> excludedRows = new ArrayList<Row>();;

@@ -89,6 +89,6 @@ public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
 
     public String getCheckType()
     {
-        return "";
+        return "Foreign Key Check " + targetColumn + " -> " + foreignKeyColumn;
     }
 }

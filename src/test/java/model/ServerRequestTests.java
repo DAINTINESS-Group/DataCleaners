@@ -24,7 +24,7 @@ public class ServerRequestTests {
     {
         SparkSession spark = new SparkConfig().getSparkSession();
         Dataset<Row> df = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\test.csv");
-        targetProfile = new DatasetProfile("frame", df, "somepath");
+        targetProfile = new DatasetProfile("frame", df, "somepath", true);
     }
 
     @Test

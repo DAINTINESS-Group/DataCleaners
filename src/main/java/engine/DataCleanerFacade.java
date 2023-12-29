@@ -15,7 +15,10 @@ import model.ClientRequestResponse;
 import model.DatasetProfile;
 import model.ServerRequest;
 import model.ServerRequestResult;
+import report.IReportGenerator;
+import report.ReportGeneratorFactory;
 import utils.RegistrationResponse;
+import utils.ReportType;
 
 public class DataCleanerFacade implements IDataCleanerFacade {
 
@@ -38,7 +41,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
 
             Dataset<Row> df = spark.read().option("header",hasHeader).csv(path)
                                     .withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
-            DatasetProfile profile = new DatasetProfile(alias, df, path);
+            DatasetProfile profile = new DatasetProfile(alias, df, path, hasHeader);
             datasetProfiles.add(profile);
 
             return RegistrationResponse.SUCCESS;
@@ -64,7 +67,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
             
             Dataset<Row> df = spark.read().jdbc(url, tableName, properties)
                                 .withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
-            DatasetProfile profile = new DatasetProfile(alias, df, "DATABASE");
+            DatasetProfile profile = new DatasetProfile(alias, df, "DATABASE", false);
             datasetProfiles.add(profile);
             return RegistrationResponse.SUCCESS;
         }
@@ -103,6 +106,15 @@ public class DataCleanerFacade implements IDataCleanerFacade {
     private ClientRequestResponse replyToClientRequest(ServerRequestResult serverResult)
     {
         return serverToClientTranslator.translateServerResponse(serverResult);
+    }
+
+    public void generateReport(String frameAlias, String outputDirectoryPath, ReportType type)
+    {
+        ReportGeneratorFactory reportGeneratorFactory = new ReportGeneratorFactory();
+        IReportGenerator reportGenerator = reportGeneratorFactory.createReportGenerator(type);
+        DatasetProfile profile = getProfile(frameAlias);
+
+        reportGenerator.generateReport(profile, outputDirectoryPath);
     }
 
     private boolean existsProfileWithAlias(String alias)

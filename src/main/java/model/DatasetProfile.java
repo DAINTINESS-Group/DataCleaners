@@ -10,14 +10,16 @@ public class DatasetProfile implements Serializable{
     
     private String alias;
     private String filePath;
+    private boolean fileHasHeader;
     private Dataset<Row> dataset;
     private ArrayList<ServerRequest> serverRequests;
 
-    public DatasetProfile(String alias, Dataset<Row> dataset, String path)
+    public DatasetProfile(String alias, Dataset<Row> dataset, String path, boolean fileHasHeader)
     {
         this.alias = alias;
         this.filePath = path;
         this.dataset = dataset;
+        this.fileHasHeader = fileHasHeader;
         serverRequests = new ArrayList<ServerRequest>();
     }
 
@@ -41,6 +43,11 @@ public class DatasetProfile implements Serializable{
     public ArrayList<ServerRequest> getServerRequests()
     {
         return serverRequests;
+    }
+
+    public boolean hasFileHeader()
+    {
+        return fileHasHeader;
     }
 
 

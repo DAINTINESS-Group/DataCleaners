@@ -1,0 +1,4 @@
+Numeric Constraint Check On zero_to_ten:[0.0,9.0]
+Rejected Lines: 42 49 51 55 59 84 
+Invalid Lines: 
+
