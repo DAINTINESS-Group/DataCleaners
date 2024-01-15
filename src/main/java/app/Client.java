@@ -6,7 +6,7 @@ import model.ClientRequest;
 import model.ClientRequestResponse;
 import utils.DomainType;
 import utils.ReportType;
-import utils.VioletingRowPolicy;
+import utils.ViolatingRowPolicy;
 
 
 public class Client {
@@ -32,7 +32,7 @@ public class Client {
                             .withColumnValues("manufacturer", new String[] {"audi"})
                             .withNoNullValues("price")
                             .withColumnType("manufacturer", DomainType.ALPHA)
-                            .withViolationPolicy(VioletingRowPolicy.ISOLATE) 
+                            .withViolationPolicy(ViolatingRowPolicy.ISOLATE) 
                             .build();
         
         
@@ -50,7 +50,7 @@ public class Client {
               .withPrimaryKeys("engineSize")
               .withNoNullValues("manufacturer")
               .withNumericColumn("engineSize", 0, 10)
-              .withViolationPolicy(VioletingRowPolicy.PURGE)
+              .withViolationPolicy(ViolatingRowPolicy.PURGE)
               .build();
         response = facade.executeClientRequest(req);
 

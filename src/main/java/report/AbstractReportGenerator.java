@@ -12,7 +12,7 @@ import org.apache.spark.sql.Row;
 import model.DatasetProfile;
 import model.ServerRequest;
 import model.ServerRequestResult;
-import utils.VioletingRowPolicy;
+import utils.ViolatingRowPolicy;
 
 public abstract class AbstractReportGenerator implements IReportGenerator, Serializable{
 
@@ -31,7 +31,7 @@ public abstract class AbstractReportGenerator implements IReportGenerator, Seria
 
     private void generateReportFromServerRequest(Dataset<Row> dataSet, ServerRequest serverRequest, String path)
     {
-        VioletingRowPolicy policy = serverRequest.getVioletingRowPolicy();
+        ViolatingRowPolicy policy = serverRequest.getViolatingRowPolicy();
 
         switch (policy)
         {

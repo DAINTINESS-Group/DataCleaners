@@ -9,11 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import config.SparkConfig;
+import engine.ServerRequestExecutor;
 import rowchecks.DomainTypeCheck;
 import rowchecks.NotNullCheck;
 import rowchecks.NumericConstraintCheck;
 import utils.DomainType;
-import utils.VioletingRowPolicy;
+import utils.ViolatingRowPolicy;
 
 public class ServerRequestTests {
     
@@ -30,14 +31,14 @@ public class ServerRequestTests {
     @Test
     public void executeTest()
     {
-        ServerRequest serverRequest = new ServerRequest(VioletingRowPolicy.WARN);
+        ServerRequest serverRequest = new ServerRequest(ViolatingRowPolicy.WARN);
         serverRequest.setProfile(targetProfile);
 
         serverRequest.addRowCheck(new DomainTypeCheck("name", DomainType.ALPHA));
         serverRequest.addRowCheck(new NumericConstraintCheck("float", -1, 0));
         serverRequest.addRowCheck(new NotNullCheck("boolean"));
 
-        serverRequest.execute();
+        new ServerRequestExecutor().executeServerRequest(serverRequest);
         ServerRequestResult result = serverRequest.getRequestResult();
         assertEquals(46, result.getRejectedRows());
         assertEquals(46, result.getRowCheckResults().where("c1 = 'REJECTED'").count());

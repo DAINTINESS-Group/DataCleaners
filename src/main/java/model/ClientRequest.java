@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import utils.DomainType;
 import utils.FormatType;
-import utils.VioletingRowPolicy;
+import utils.ViolatingRowPolicy;
 import utils.settings.DomainTypeSettings;
 import utils.settings.DomainValueSettings;
 import utils.settings.ForeignKeySettings;
@@ -23,7 +23,7 @@ public class ClientRequest {
     private ArrayList<DomainValueSettings> domainValueChecks;
     private ArrayList<NotNullSettings> notNullChecks;
     private ArrayList<NumberConstraintSettings> numberConstraintChecks;
-    private VioletingRowPolicy violationPolicy;
+    private ViolatingRowPolicy violationPolicy;
 
 
     private ClientRequest(Builder builder)
@@ -73,7 +73,7 @@ public class ClientRequest {
         return numberConstraintChecks;
     }
 
-    public VioletingRowPolicy getViolationPolicy()
+    public ViolatingRowPolicy getViolationPolicy()
     {
         return violationPolicy;
     }
@@ -94,7 +94,7 @@ public class ClientRequest {
         ArrayList<DomainValueSettings> domainValueChecks = new ArrayList<DomainValueSettings>();
         ArrayList<NotNullSettings> notNullChecks = new ArrayList<NotNullSettings>();
         ArrayList<NumberConstraintSettings> numberConstraintChecks = new ArrayList<NumberConstraintSettings>();
-        VioletingRowPolicy policy = VioletingRowPolicy.WARN;
+        ViolatingRowPolicy policy = ViolatingRowPolicy.WARN;
 
         private Builder() {}
 
@@ -158,7 +158,7 @@ public class ClientRequest {
            return withNumericColumn(targetColumn, minValue, maxValue, true, true);
         }
 
-        public Builder withViolationPolicy(VioletingRowPolicy policy)
+        public Builder withViolationPolicy(ViolatingRowPolicy policy)
         {
             this.policy = policy;
             return this;

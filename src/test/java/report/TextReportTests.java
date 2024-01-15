@@ -16,12 +16,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import config.SparkConfig;
+import engine.ServerRequestExecutor;
 import model.DatasetProfile;
 import model.ServerRequest;
 import rowchecks.IRowCheck;
 import rowchecks.NumericConstraintCheck;
 import rowchecks.RowCheckTest;
-import utils.VioletingRowPolicy;
+import utils.ViolatingRowPolicy;
 
 public class TextReportTests extends RowCheckTest{
     
@@ -40,7 +41,7 @@ public class TextReportTests extends RowCheckTest{
     @Test
     public void warnReportGoodDayTest()
     {        
-        initGoodDayTest(VioletingRowPolicy.WARN);
+        initGoodDayTest(ViolatingRowPolicy.WARN);
         File outputFile = new File(path + "\\frame-request0-log.txt");
         File expectedFile = new File("src\\test\\resources\\reports\\goodDayWarn.txt");
         try
@@ -58,7 +59,7 @@ public class TextReportTests extends RowCheckTest{
     @Test
     public void isolateReportGoodDayTest()
     {        
-        initGoodDayTest(VioletingRowPolicy.ISOLATE);
+        initGoodDayTest(ViolatingRowPolicy.ISOLATE);
         File logFile = new File(path + "\\frame-request0-log.txt");
         File passedEntries = new File(path + "\\frame-request0-passedEntries.csv");
         File rejectedEntries = new File(path + "\\frame-request0-rejectedEntries.csv");
@@ -88,7 +89,7 @@ public class TextReportTests extends RowCheckTest{
     @Test
     public void purgeReportGoodDayTest()
     {        
-        initGoodDayTest(VioletingRowPolicy.PURGE);
+        initGoodDayTest(ViolatingRowPolicy.PURGE);
         File logFile = new File(path + "\\frame-request0-log.txt");
         File passedEntries = new File(path + "\\frame-request0-passedEntries.csv");
 
@@ -134,7 +135,7 @@ public class TextReportTests extends RowCheckTest{
         
     }
 
-    private void initGoodDayTest(VioletingRowPolicy policy)
+    private void initGoodDayTest(ViolatingRowPolicy policy)
     {
         ServerRequest serverReq = new ServerRequest(policy);
         
@@ -145,7 +146,7 @@ public class TextReportTests extends RowCheckTest{
         serverReq.setProfile(targetProfile);
         targetProfile.addServerRequest(serverReq);
 
-        serverReq.execute();
+        new ServerRequestExecutor().executeServerRequest(serverReq);
         
         IReportGenerator reportGen = new StaticTxtReportGenerator();
         reportGen.generateReport(targetProfile, path);

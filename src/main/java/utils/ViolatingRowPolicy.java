@@ -1,6 +1,6 @@
 package utils;
 
-public enum VioletingRowPolicy
+public enum ViolatingRowPolicy
     {
         ISOLATE,
         PURGE,

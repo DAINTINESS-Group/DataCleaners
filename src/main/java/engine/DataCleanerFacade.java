@@ -27,6 +27,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
 
     private ClientToServerRequestTranslator clientToServerTranslator = new ClientToServerRequestTranslator();
     private ServerToClientResponseTranslator serverToClientTranslator = new ServerToClientResponseTranslator();
+    private ServerRequestExecutor serverRequestExecutor = new ServerRequestExecutor();
 
     public DataCleanerFacade()
     {
@@ -100,7 +101,7 @@ public class DataCleanerFacade implements IDataCleanerFacade {
 
     private ServerRequestResult executeServerRequest(ServerRequest serverReq)
     {
-        return serverReq.execute();
+        return serverRequestExecutor.executeServerRequest(serverReq);
     }
 
     private ClientRequestResponse replyToClientRequest(ServerRequestResult serverResult)
