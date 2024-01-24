@@ -4,7 +4,7 @@ import engine.FacadeFactory;
 import engine.IDataCleanerFacade;
 import model.ClientRequest;
 import model.ClientRequestResponse;
-import utils.DomainType;
+import utils.Comparator;
 import utils.ReportType;
 import utils.ViolatingRowPolicy;
 
@@ -20,48 +20,32 @@ public class Client {
 
         facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame1", true);
         facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame2", true);
-        
+    
+        final long startTime = System.currentTimeMillis();
+        //TO-DO: Performance issue when using price/mileage. Large numbers..?
         ClientRequest req = ClientRequest.builder()
-                            .onDataset("frame2")
-                            .withColumnType("engineSize", DomainType.NUMERIC)
-                            //.withFormat("date", FormatType.MM_YYYY, "-") /* USE THIS ON PROPER DATASET (ex. test) */
-                            //.withPrimaryKeys("price") /* This can be used here, but will affect the following commented results */
-                            .withForeignKeys("manufacturer", "frame2", "manufacturer")
-                            .withNumericColumn("price", 0, 20_000)
-                            .withColumnType("price", DomainType.INTEGER)
-                            .withColumnValues("manufacturer", new String[] {"audi"})
-                            .withNoNullValues("price")
-                            .withColumnType("manufacturer", DomainType.ALPHA)
+                            .onDataset("frame1")
+                            .withColumnValues("manufacturer", new String[] {"audi","bmw","ford","vauxhall","vw","hyundi"})
+                            .withColumnValues("transmission", new String[] {"Manual"})
+                            .withColumnValues("fuelType", new String[] {"Diesel"})
+                            .withCustomCheck("year", "<", "2016") 
+                            .withCustomConditionalCheck("engineSize", ">", "1.5", "tax", Comparator.LESS_EQUAL, "145")
+                            .withCustomHollisticCheck("mpg", ">=", "AVG(mpg)")
                             .withViolationPolicy(ViolatingRowPolicy.ISOLATE) 
                             .build();
         
-        
         ClientRequestResponse response = facade.executeClientRequest(req);
-
-        //12 Rejected rows. Makes a log file and 2 isolated files (12 rejected entries - 92 passed entries)
+        //99 rejections, no invalid, 4 passed
         System.out.println("==========RESPONSE RESULT TO CLIENT============");
         System.out.println("Succesful: " + response.isSuccesful());
         System.out.println("Rejected Rows: " + response.getNumberOfRejectedRows());
         System.out.println("Invalid Rows: " + response.getNumberOfInvalidRows());
 
-        
-        req = ClientRequest.builder()
-              .onDataset("frame2")
-              .withPrimaryKeys("engineSize")
-              .withNoNullValues("manufacturer")
-              .withNumericColumn("engineSize", 0, 10)
-              .withViolationPolicy(ViolatingRowPolicy.PURGE)
-              .build();
-        response = facade.executeClientRequest(req);
+        final long endTime = System.currentTimeMillis();
+        System.out.println("Total execution time: " + (endTime - startTime)/1000d + " second(s)");
 
-        //96 rejected entries. Makes log file and 1 file with the 7 passed entries.
-        System.out.println("==========RESPONSE 2 RESULT TO CLIENT============");
-        System.out.println("Succesful: " + response.isSuccesful());
-        System.out.println("Rejected Rows: " + response.getNumberOfRejectedRows());
-        System.out.println("Invalid Rows: " + response.getNumberOfInvalidRows());
 
-        //NOTE: Path should be a directory ^_^
-        facade.generateReport("frame2", "C:\\Users\\nikos\\Desktop\\OUT", ReportType.TEXT);
+        //facade.generateReport("frame1", "C:\\Users\\nikos\\Desktop\\OUT", ReportType.TEXT);
     }
 
 

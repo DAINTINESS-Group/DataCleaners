@@ -14,6 +14,9 @@ import utils.settings.FormatSettings;
 import utils.settings.NotNullSettings;
 import utils.settings.NumberConstraintSettings;
 import utils.settings.PrimaryKeySettings;
+import utils.settings.UserDefinedGroupSettings;
+import utils.settings.UserDefinedHolisticSettings;
+import utils.settings.UserDefinedRowSettings;
 
 public class ClientToServerRequestTranslator {
 
@@ -64,6 +67,21 @@ public class ClientToServerRequestTranslator {
 			checks.add(factory.createNumericConstraintCheck(ncSettings));
 		}
 
+		for (UserDefinedRowSettings udrSettings : order.getUserDefinedRowSettings())
+		{
+			checks.add(factory.createUserDefinedCheck(udrSettings));
+		}
+
+		for (UserDefinedGroupSettings udgSettings : order.getUserDefinedGroupSettings())
+		{
+			checks.add(factory.createUserDefinedGroupCheck(udgSettings));
+		}
+
+		for (UserDefinedHolisticSettings udhSettings : order.getUserDefinedHolisticSettings())
+		{
+			checks.add(factory.createUserDefinedHolisticCheck(udhSettings, order.getTargetDataset()));
+		}
+		
 		return checks;
 	}
 }

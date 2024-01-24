@@ -12,6 +12,9 @@ import utils.settings.FormatSettings;
 import utils.settings.NotNullSettings;
 import utils.settings.NumberConstraintSettings;
 import utils.settings.PrimaryKeySettings;
+import utils.settings.UserDefinedGroupSettings;
+import utils.settings.UserDefinedHolisticSettings;
+import utils.settings.UserDefinedRowSettings;
 
 public class ClientRequest {
 
@@ -23,6 +26,10 @@ public class ClientRequest {
     private ArrayList<DomainValueSettings> domainValueChecks;
     private ArrayList<NotNullSettings> notNullChecks;
     private ArrayList<NumberConstraintSettings> numberConstraintChecks;
+
+    private ArrayList<UserDefinedRowSettings> userDefinedRowChecks;
+    private ArrayList<UserDefinedGroupSettings> userDefinedGroupChecks;
+    private ArrayList<UserDefinedHolisticSettings> userDefinedHolisticChecks;
     private ViolatingRowPolicy violationPolicy;
 
 
@@ -36,6 +43,9 @@ public class ClientRequest {
         domainValueChecks = builder.domainValueChecks;
         notNullChecks = builder.notNullChecks;
         numberConstraintChecks = builder.numberConstraintChecks;
+        userDefinedRowChecks = builder.userDefinedRowChecks;
+        userDefinedGroupChecks = builder.userDefinedGroupChecks;
+        userDefinedHolisticChecks = builder.userDefinedHolisticChecks;
         violationPolicy = builder.policy;
 
     }
@@ -73,6 +83,21 @@ public class ClientRequest {
         return numberConstraintChecks;
     }
 
+    public ArrayList<UserDefinedRowSettings> getUserDefinedRowSettings()
+    {
+        return userDefinedRowChecks;
+    }
+
+    public ArrayList<UserDefinedGroupSettings> getUserDefinedGroupSettings()
+    {
+        return userDefinedGroupChecks;
+    }
+
+    public ArrayList<UserDefinedHolisticSettings> getUserDefinedHolisticSettings()
+    {
+        return userDefinedHolisticChecks;
+    }
+
     public ViolatingRowPolicy getViolationPolicy()
     {
         return violationPolicy;
@@ -94,6 +119,9 @@ public class ClientRequest {
         ArrayList<DomainValueSettings> domainValueChecks = new ArrayList<DomainValueSettings>();
         ArrayList<NotNullSettings> notNullChecks = new ArrayList<NotNullSettings>();
         ArrayList<NumberConstraintSettings> numberConstraintChecks = new ArrayList<NumberConstraintSettings>();
+        ArrayList<UserDefinedRowSettings> userDefinedRowChecks = new ArrayList<UserDefinedRowSettings>();
+        ArrayList<UserDefinedGroupSettings> userDefinedGroupChecks = new ArrayList<UserDefinedGroupSettings>();
+        ArrayList<UserDefinedHolisticSettings> userDefinedHolisticChecks = new ArrayList<UserDefinedHolisticSettings>();
         ViolatingRowPolicy policy = ViolatingRowPolicy.WARN;
 
         private Builder() {}
@@ -156,6 +184,26 @@ public class ClientRequest {
         public Builder withNumericColumn(String targetColumn, double minValue, double maxValue)
         {
            return withNumericColumn(targetColumn, minValue, maxValue, true, true);
+        }
+
+        public Builder withCustomCheck(String targetColumn, String comparator, String customVariable)
+        {
+            userDefinedRowChecks.add(new UserDefinedRowSettings(targetColumn, comparator, customVariable));
+            return this;
+        }
+
+        public Builder withCustomConditionalCheck(String conditionTargetColumn, String conditionComparator,
+                    String conditionUserVariable, String targetColumn, String comparator, String userVariable)
+        {
+            userDefinedGroupChecks.add(new UserDefinedGroupSettings(conditionTargetColumn, conditionComparator, 
+                                                    conditionUserVariable, targetColumn, comparator, userVariable));
+            return this;
+        }
+
+        public Builder withCustomHollisticCheck(String targetColumn, String comparator, String customVariable)
+        {
+            userDefinedHolisticChecks.add(new UserDefinedHolisticSettings(targetColumn, comparator, customVariable));
+            return this;
         }
 
         public Builder withViolationPolicy(ViolatingRowPolicy policy)

@@ -13,6 +13,9 @@ import utils.settings.FormatSettings;
 import utils.settings.NotNullSettings;
 import utils.settings.NumberConstraintSettings;
 import utils.settings.PrimaryKeySettings;
+import utils.settings.UserDefinedGroupSettings;
+import utils.settings.UserDefinedHolisticSettings;
+import utils.settings.UserDefinedRowSettings;
 
 //TODO add defensive code for null parameters
 public class RowCheckFactory {
@@ -66,5 +69,41 @@ public class RowCheckFactory {
 		return new BPlusTreeForeignKeyCheck(fkSettings.getTargetColumn(), 
 										df,
 										fkSettings.getForeignKeyColumn());
+	}
+
+	public IRowCheck createUserDefinedCheck(UserDefinedRowSettings udSettings)
+	{
+		return new UserDefinedRowCheck(udSettings.getTargetColumn(),
+									   udSettings.getComparator(),
+									   udSettings.getUserVariable());
+	}
+
+	public IRowCheck createUserDefinedGroupCheck(UserDefinedGroupSettings udgSettings)
+	{
+		return new UserDefinedGroupCheck(udgSettings.getConditionTargetColumn(),
+										 udgSettings.getConditionComparator(),
+										 udgSettings.getConditionUserVariable(),
+										 udgSettings.getTargetColumn(),
+										 udgSettings.getComparator(),
+										 udgSettings.getUserVariable());
+	}
+
+	//TO-DO: Let user define Holistic Dataset? Or keep it like that?
+	public IRowCheck createUserDefinedHolisticCheck(UserDefinedHolisticSettings udhSettings, String targetDatasetAlias)
+	{
+		Dataset<Row> df = null;
+		for (DatasetProfile profile : profiles)
+		{
+			if (profile.getAlias().equals(targetDatasetAlias))
+			{
+				df = profile.getDataset();
+				break;
+			}
+		}
+
+		return new UserDefinedHolisticCheck(udhSettings.getTargetColumn(),
+											udhSettings.getComparator(),
+											udhSettings.getUserVariable(),
+											df);
 	}
 }
