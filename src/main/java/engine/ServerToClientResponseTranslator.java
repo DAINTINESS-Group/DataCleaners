@@ -1,6 +1,6 @@
 package engine;
 
-import model.ClientRequestResponse;
+import engine.clientRequest.ClientRequestResponse;
 import model.ServerRequestResult;
 
 public class ServerToClientResponseTranslator {

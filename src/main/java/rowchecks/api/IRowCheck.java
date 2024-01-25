@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.api;
 
 import org.apache.spark.sql.Row;
 

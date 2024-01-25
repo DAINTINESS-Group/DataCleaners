@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -11,41 +11,59 @@ import javax.script.ScriptException;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
-public class UserDefinedGroupCheck implements IRowCheck, Serializable{
+/**
+ * THe class ensures that if a condition is held in a condition column, a respective target condition is held in a target column.
+ * 
+ * Specifically, the idea is:
+ * if (<conditionColumn conditionComparator conditionExpression>) then
+ *    <(targetColumn targetComparator targetExpression> must also hold
+ * otherwise the row is flagged as problematic
+ * The row is flagged as OK if the first condition check doees not hold
+ * 
+ * For example:
+ * if (CustomerName == 'Mitsos') then
+ *     (CustomaerAge < 45)
+ * meaning it is impossible for anyone named mitsos to be older than 45
+ *       
+ */
+public class UserDefinedConditionalDependencyCheck implements IRowCheck, Serializable{
 
-    private String conditionTargetColumn;
+    private static final long serialVersionUID = 1L;
+	private String conditionTargetColumn;
     private String conditionComparator;
     private String conditionUserVariable;
 
     private String targetColumn; 
-    private String comparator;
-    private String userVariable;
+    private String targetComparator;
+    private String targetExpression;
 
     private transient ScriptEngine scriptEngine;
     private HashSet<String> variableColumns = new HashSet<String>();
 
-    //TO-DO: Consider using UserDefinedRowCheck as a condition instead of 3 vars
-    public UserDefinedGroupCheck(String conditionTargetColumn, String conditionComparator, String conditionUserVariable,
-                                 String targetColumn, String comparator, String userVariable)
+
+    public UserDefinedConditionalDependencyCheck(String conditionColumn, String conditionComparator, String conditionExpression,
+                                 String targetColumn, String targetComparator, String targetExpression)
+    //TO-DO: Consider using UserDefinedColumnExpressionRowCheck as a condition instead of 3 vars
     {
-        this.conditionTargetColumn = conditionTargetColumn;
+        this.conditionTargetColumn = conditionColumn;
         this.conditionComparator = conditionComparator;
-        this.conditionUserVariable = conditionUserVariable;
+        this.conditionUserVariable = conditionExpression;
 
         this.targetColumn = targetColumn;
-        this.comparator = comparator;
-        this.userVariable = userVariable;
+        this.targetComparator = targetComparator;
+        this.targetExpression = targetExpression;
 
         Pattern regexPattern = Pattern.compile("[a-zA-Z]\\w*");
-        Matcher matcher = regexPattern.matcher(conditionUserVariable);
+        Matcher matcher = regexPattern.matcher(conditionExpression);
         while (matcher.find())
         {
             variableColumns.add(matcher.group());
         }
         
-        matcher = regexPattern.matcher(userVariable);
+        matcher = regexPattern.matcher(targetExpression);
         while (matcher.find())
         {
             variableColumns.add(matcher.group());
@@ -74,7 +92,7 @@ public class UserDefinedGroupCheck implements IRowCheck, Serializable{
 
             //If the condition is true, we now can check the second condition.
             double targetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(targetColumn)));
-            boolean isCheckValid =  (boolean)scriptEngine.eval(targetColumnValue + comparator + userVariable);
+            boolean isCheckValid =  (boolean)scriptEngine.eval(targetColumnValue + targetComparator + targetExpression);
             return isCheckValid ? CheckResult.PASSED : CheckResult.REJECTED;
         }
         catch(NullPointerException e)
@@ -94,7 +112,7 @@ public class UserDefinedGroupCheck implements IRowCheck, Serializable{
     @Override
     public String getCheckType() {
         return "UserDefined Check If " + conditionTargetColumn + " " + conditionComparator + " " + conditionUserVariable 
-            + " then " + targetColumn + " " + comparator + " " + userVariable;
+            + " then " + targetColumn + " " + targetComparator + " " + targetExpression;
     }
     
 }

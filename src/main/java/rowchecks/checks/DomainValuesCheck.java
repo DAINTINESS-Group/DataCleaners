@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,11 +6,13 @@ import java.util.Arrays;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
 public class DomainValuesCheck implements IRowCheck, Serializable {
 
-    private ArrayList<String> domainValues;
+    private static final long serialVersionUID = 3737639305672122256L;
+	private ArrayList<String> domainValues;
     private String targetColumn;
 
     public DomainValuesCheck(String targetColumn, String[] domainValues)

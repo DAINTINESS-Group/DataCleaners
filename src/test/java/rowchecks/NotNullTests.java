@@ -2,6 +2,7 @@ package rowchecks;
 
 import org.junit.Test;
 
+import rowchecks.checks.NotNullCheck;
 import utils.CheckResult;
 
 public class NotNullTests extends RowCheckTest{

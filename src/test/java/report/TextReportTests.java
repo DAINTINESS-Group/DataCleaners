@@ -19,9 +19,9 @@ import config.SparkConfig;
 import engine.ServerRequestExecutor;
 import model.DatasetProfile;
 import model.ServerRequest;
-import rowchecks.IRowCheck;
-import rowchecks.NumericConstraintCheck;
 import rowchecks.RowCheckTest;
+import rowchecks.api.IRowCheck;
+import rowchecks.checks.NumericConstraintCheck;
 import utils.ViolatingRowPolicy;
 
 public class TextReportTests extends RowCheckTest{

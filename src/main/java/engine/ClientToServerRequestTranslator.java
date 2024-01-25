@@ -2,11 +2,11 @@ package engine;
 
 import java.util.ArrayList;
 
-import model.ClientRequest;
+import engine.clientRequest.ClientRequest;
 import model.DatasetProfile;
 import model.ServerRequest;
-import rowchecks.IRowCheck;
-import rowchecks.RowCheckFactory;
+import rowchecks.api.IRowCheck;
+import rowchecks.factory.RowCheckFactory;
 import utils.settings.DomainTypeSettings;
 import utils.settings.DomainValueSettings;
 import utils.settings.ForeignKeySettings;

@@ -3,12 +3,13 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import rowchecks.IRowCheck;
+import rowchecks.api.IRowCheck;
 import utils.ViolatingRowPolicy;
 
 public class ServerRequest implements Serializable{
     
-    //TODO: Add Hollistic and Group Checks.
+    private static final long serialVersionUID = 5849658787172344510L;
+	//TODO: Add Hollistic and Group Checks.
     private DatasetProfile targetProfile;
     private ViolatingRowPolicy violatingRowPolicy;
 

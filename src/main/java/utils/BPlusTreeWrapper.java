@@ -12,7 +12,8 @@ import btree4j.utils.io.FileUtils;
 
 public class BPlusTreeWrapper implements Serializable{
     
-    private transient Database bPlusTree;
+    private static final long serialVersionUID = 10561941102347773L;
+	private transient Database bPlusTree;
     private String dbName;
 
     public BPlusTreeWrapper(String dbName)

@@ -1,14 +1,16 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
 public class NumericConstraintCheck implements IRowCheck, Serializable{
 
-    private String targetColumn;
+    private static final long serialVersionUID = 6492963892432158520L;
+	private String targetColumn;
     private double minValue = Double.NEGATIVE_INFINITY;
     private boolean isLeftInclusive = true;
     private double maxValue = Double.POSITIVE_INFINITY;

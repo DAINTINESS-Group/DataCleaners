@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 
@@ -7,12 +7,15 @@ import org.apache.spark.sql.Row;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.OperationStatus;
 
+import rowchecks.api.IRowCheck;
 import utils.BPlusTreeWrapper;
 import utils.CheckResult;
 
 public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
 
-    private static int globalIdCounter = 0;
+	private static final long serialVersionUID = 4887311250208642538L;
+
+	private static int globalIdCounter = 0;
 
     private String targetColumn;
     private String dbName;

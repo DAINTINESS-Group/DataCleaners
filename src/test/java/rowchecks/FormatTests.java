@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import rowchecks.checks.FormatCheck;
 import utils.CheckResult;
 import utils.FormatType;
 

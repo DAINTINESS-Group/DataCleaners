@@ -1,16 +1,18 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 import utils.DomainType;
 
 public class DomainTypeCheck implements IRowCheck, Serializable {
 
-    private String targetColumn;
+    private static final long serialVersionUID = 5599034285939385721L;
+	private String targetColumn;
     private DomainType type;
     private Pattern regexPattern;
 

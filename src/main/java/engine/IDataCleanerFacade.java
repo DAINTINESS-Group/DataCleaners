@@ -1,8 +1,8 @@
 package engine;
 
 
-import model.ClientRequest;
-import model.ClientRequestResponse;
+import engine.clientRequest.ClientRequest;
+import engine.clientRequest.ClientRequestResponse;
 import utils.RegistrationResponse;
 import utils.ReportType;
 

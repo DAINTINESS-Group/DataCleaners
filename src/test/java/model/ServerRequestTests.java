@@ -10,9 +10,9 @@ import org.junit.Test;
 
 import config.SparkConfig;
 import engine.ServerRequestExecutor;
-import rowchecks.DomainTypeCheck;
-import rowchecks.NotNullCheck;
-import rowchecks.NumericConstraintCheck;
+import rowchecks.checks.DomainTypeCheck;
+import rowchecks.checks.NotNullCheck;
+import rowchecks.checks.NumericConstraintCheck;
 import utils.DomainType;
 import utils.ViolatingRowPolicy;
 

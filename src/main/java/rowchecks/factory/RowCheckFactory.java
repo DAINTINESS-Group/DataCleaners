@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.factory;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,17 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import model.DatasetProfile;
+import rowchecks.api.IRowCheck;
+import rowchecks.checks.BPlusTreeForeignKeyCheck;
+import rowchecks.checks.BPlusTreePrimaryKeyCheck;
+import rowchecks.checks.DomainTypeCheck;
+import rowchecks.checks.DomainValuesCheck;
+import rowchecks.checks.FormatCheck;
+import rowchecks.checks.NotNullCheck;
+import rowchecks.checks.NumericConstraintCheck;
+import rowchecks.checks.UserDefinedConditionalDependencyCheck;
+import rowchecks.checks.UserDefinedRowValueComparisonToAggValueCheck;
+import rowchecks.checks.UserDefinedColumnExpressionRowCheck;
 import utils.settings.DomainTypeSettings;
 import utils.settings.DomainValueSettings;
 import utils.settings.ForeignKeySettings;
@@ -73,14 +84,14 @@ public class RowCheckFactory {
 
 	public IRowCheck createUserDefinedCheck(UserDefinedRowSettings udSettings)
 	{
-		return new UserDefinedRowCheck(udSettings.getTargetColumn(),
+		return new UserDefinedColumnExpressionRowCheck(udSettings.getTargetColumn(),
 									   udSettings.getComparator(),
 									   udSettings.getUserVariable());
 	}
 
 	public IRowCheck createUserDefinedGroupCheck(UserDefinedGroupSettings udgSettings)
 	{
-		return new UserDefinedGroupCheck(udgSettings.getConditionTargetColumn(),
+		return new UserDefinedConditionalDependencyCheck(udgSettings.getConditionTargetColumn(),
 										 udgSettings.getConditionComparator(),
 										 udgSettings.getConditionUserVariable(),
 										 udgSettings.getTargetColumn(),
@@ -101,7 +112,7 @@ public class RowCheckFactory {
 			}
 		}
 
-		return new UserDefinedHolisticCheck(udhSettings.getTargetColumn(),
+		return new UserDefinedRowValueComparisonToAggValueCheck(udhSettings.getTargetColumn(),
 											udhSettings.getComparator(),
 											udhSettings.getUserVariable(),
 											df);

@@ -1,14 +1,16 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
 public class NotNullCheck implements IRowCheck, Serializable {
 
-    private String targetColumn;
+    private static final long serialVersionUID = 2396254117364726147L;
+	private String targetColumn;
 
     public NotNullCheck(String targetColumn)
     {

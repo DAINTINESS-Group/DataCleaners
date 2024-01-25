@@ -12,7 +12,9 @@ import model.ServerRequestResult;
 
 public class StaticTxtReportGenerator extends AbstractReportGenerator {
     
-    protected void generateWarningLog(ServerRequest serverRequest, String outputDirectory)
+    private static final long serialVersionUID = 4847761730341782802L;
+
+	protected void generateWarningLog(ServerRequest serverRequest, String outputDirectory)
     {
         ServerRequestResult result = serverRequest.getRequestResult();
         Dataset<Row> results = result.getRowCheckResults();

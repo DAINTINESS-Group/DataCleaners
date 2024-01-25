@@ -2,6 +2,10 @@ package rowchecks;
 
 import org.junit.Test;
 
+import rowchecks.checks.DomainTypeCheck;
+import rowchecks.checks.DomainValuesCheck;
+import rowchecks.checks.NotNullCheck;
+import rowchecks.checks.NumericConstraintCheck;
 import utils.CheckResult;
 import utils.DomainType;
 

@@ -16,7 +16,8 @@ import utils.ViolatingRowPolicy;
 
 public abstract class AbstractReportGenerator implements IReportGenerator, Serializable{
 
-    protected static FileWriter fileWriter;
+    private static final long serialVersionUID = -8941830645847259570L;
+	protected static FileWriter fileWriter;
     protected static int requestCounter;
 
     public void generateReport(DatasetProfile profile, String path) 

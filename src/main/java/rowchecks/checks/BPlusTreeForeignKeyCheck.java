@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 
@@ -10,6 +10,7 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
+import rowchecks.api.IRowCheck;
 import utils.BPlusTreeWrapper;
 import utils.CheckResult;
 
@@ -17,7 +18,9 @@ import utils.CheckResult;
 
 public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
  
-    private static int globalIdCounter = 0;
+    private static final long serialVersionUID = 1915838995252217241L;
+
+	private static int globalIdCounter = 0;
 
     private String targetColumn;
     private String foreignKeyColumn;

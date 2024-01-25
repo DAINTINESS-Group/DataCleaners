@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
-import model.ClientRequest;
-import model.ClientRequestResponse;
+import engine.clientRequest.ClientRequest;
+import engine.clientRequest.ClientRequestResponse;
 import model.DatasetProfile;
 import utils.DomainType;
 

@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 
 import java.io.Serializable;
@@ -8,11 +8,13 @@ import java.util.List;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
 public class HashForeignKeyCheck implements IRowCheck, Serializable{
 
-    private HashSet<String> keys;
+    private static final long serialVersionUID = -2067519723133476527L;
+	private HashSet<String> keys;
     private String targetColumn;
     private String foreinKeyColumn;
 

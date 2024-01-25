@@ -1,16 +1,18 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 import utils.FormatType;
 
 public class FormatCheck implements IRowCheck, Serializable {
 
-    private String targetColumn;
+    private static final long serialVersionUID = 8326484956970093220L;
+	private String targetColumn;
     private FormatType type;
     private Pattern regexPattern;
     

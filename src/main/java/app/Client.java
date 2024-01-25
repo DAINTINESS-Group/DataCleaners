@@ -2,8 +2,8 @@ package app;
 
 import engine.FacadeFactory;
 import engine.IDataCleanerFacade;
-import model.ClientRequest;
-import model.ClientRequestResponse;
+import engine.clientRequest.ClientRequest;
+import engine.clientRequest.ClientRequestResponse;
 import utils.Comparator;
 import utils.ReportType;
 import utils.ViolatingRowPolicy;
@@ -45,7 +45,7 @@ public class Client {
         System.out.println("Total execution time: " + (endTime - startTime)/1000d + " second(s)");
 
 
-        //facade.generateReport("frame1", "C:\\Users\\nikos\\Desktop\\OUT", ReportType.TEXT);
+        facade.generateReport("frame1", "src\\test\\resources\\reports\\ClientReport", ReportType.TEXT);
     }
 
 

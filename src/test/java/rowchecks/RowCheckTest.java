@@ -10,6 +10,7 @@ import org.apache.spark.sql.SparkSession;
 import org.junit.Before;
 
 import config.SparkConfig;
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
 public abstract class RowCheckTest {

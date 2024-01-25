@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,14 +14,33 @@ import javax.script.ScriptException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.AggregationVariable;
 import utils.CheckResult;
 
-public class UserDefinedHolisticCheck implements IRowCheck, Serializable{
+
+/**
+ * The class ensures that if a condition is held in a condition column, the column is flagged OK, otherwise it is problematic.
+ * THe condition relates the value of the current row to an aggregate statistic over the column
+ * 
+ * Specifically, the idea is:
+ * if (<conditionColumn conditionComparator conditionExpression>) then
+ *    the column is flagged as OK
+ * otherwise the row is flagged as problematic
+ * 
+ * For example:
+ * if (EmplSalary >= AVG(EmpSalary)+145*7 ) then
+ *     row is OK
+ * meaning we flag as problematic all employees with salary lower than AVG(EmpSalary)+145*7  
+ *       
+ **/
+
+public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, Serializable{
     
-    private String targetVariable;
+    private static final long serialVersionUID = 8227700374246743115L;
+	private String conditionColumn;
     private String comparator;
-    private String userVariable;
+    private String conditionExpression;
     private String translatedUserVariable;
 
     private HashSet<String> variableColumns;
@@ -29,12 +48,12 @@ public class UserDefinedHolisticCheck implements IRowCheck, Serializable{
 
     private transient ScriptEngine scriptEngine;
 
-    public UserDefinedHolisticCheck(String targetVariable, String comparator, String userVariable,
+    public UserDefinedRowValueComparisonToAggValueCheck(String conditionColumn, String comparator, String conditionExpression,
                                     Dataset<Row> targetDataset)
     {
-        this.targetVariable = targetVariable;
+        this.conditionColumn = conditionColumn;
         this.comparator = comparator;
-        this.userVariable = userVariable;
+        this.conditionExpression = conditionExpression;
 
         aggregatedColumns = new HashMap<String, Double>();
         variableColumns = new HashSet<String>();
@@ -48,7 +67,7 @@ public class UserDefinedHolisticCheck implements IRowCheck, Serializable{
 
         //Step 1: Isolate all simple variables. NOTE: This also fetches aggregation keywords!
         Pattern regexPattern = Pattern.compile("[a-zA-Z]\\w*");
-        Matcher matcher = regexPattern.matcher(userVariable);
+        Matcher matcher = regexPattern.matcher(conditionExpression);
         while (matcher.find())
         {
             String match = matcher.group();
@@ -56,8 +75,8 @@ public class UserDefinedHolisticCheck implements IRowCheck, Serializable{
         }
         
         regexPattern = Pattern.compile("(?i)(SUM|AVG|MAX|MIN)\\([a-zA-Z]\\w*\\)");
-        matcher = regexPattern.matcher(userVariable);
-        String translatedUserVariable = userVariable;
+        matcher = regexPattern.matcher(conditionExpression);
+        String translatedUserVariable = conditionExpression;
         int counter = 0;
         HashMap<String, String> aggregationVariableTranslator = new HashMap<String,String>();
         //Find all aggregation functions, translate them to single variables.
@@ -107,15 +126,15 @@ public class UserDefinedHolisticCheck implements IRowCheck, Serializable{
                 }
             }
             
-            //Determine if targetVariable is a number or a column.
+            //Determine if conditionColumn is a number or a column.
             double targetVariableValue;
             try
             {
-                targetVariableValue = Double.parseDouble(targetVariable);
+                targetVariableValue = Double.parseDouble(conditionColumn);
             }
             catch (Exception e)
             {
-                targetVariableValue = Double.parseDouble(row.getString(row.fieldIndex(targetVariable)));
+                targetVariableValue = Double.parseDouble(row.getString(row.fieldIndex(conditionColumn)));
             }
             
             
@@ -142,7 +161,7 @@ public class UserDefinedHolisticCheck implements IRowCheck, Serializable{
     }
 
     public String getCheckType() {
-        return "UserDefined Check: " + targetVariable + " " + comparator + " " + userVariable;
+        return "UserDefined Check: " + conditionColumn + " " + comparator + " " + conditionExpression;
     }
     
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import rowchecks.checks.BPlusTreePrimaryKeyCheck;
 import utils.CheckResult;
 
 public class BPlusPrimaryKeyTests extends RowCheckTest {

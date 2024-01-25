@@ -2,6 +2,7 @@ package rowchecks;
 
 import org.junit.Test;
 
+import rowchecks.checks.DomainTypeCheck;
 import utils.CheckResult;
 import utils.DomainType;
 

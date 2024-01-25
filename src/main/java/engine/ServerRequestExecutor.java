@@ -12,12 +12,13 @@ import org.apache.spark.sql.expressions.Window;
 
 import model.ServerRequest;
 import model.ServerRequestResult;
-import rowchecks.IRowCheck;
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
 public class ServerRequestExecutor implements Serializable {
     
-    private ArrayList<IRowCheck> rowChecks;
+    private static final long serialVersionUID = 7963000311509095105L;
+	private ArrayList<IRowCheck> rowChecks;
     private ServerRequestResult requestResult;
 
     public ServerRequestResult executeServerRequest(ServerRequest request)

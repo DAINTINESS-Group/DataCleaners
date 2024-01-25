@@ -1,53 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.2.4" icons="true" automaticImage="PNG" always-add-relationships="true" generalizations="true" 
   realizations="true" associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
-  <package id="1" language="java" name="utils" project="DataCleaners" file="/DataCleaners/src/main/java/utils" 
+  <package id="1" language="java" name="config" project="DataCleaners" file="/DataCleaners/src/main/java/config" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="50" width="101" x="205" y="357"/>    
+    <position height="-1" width="-1" x="247" y="155"/>    
     <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
   </package>  
-  <package id="2" language="java" name="rowchecks" project="DataCleaners" file="/DataCleaners/src/main/java/rowchecks" 
+  <package id="2" language="java" name="engine" project="DataCleaners" file="/DataCleaners/src/main/java/engine" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="50" width="101" x="83" y="267"/>    
+    <position height="50" width="101" x="456" y="127"/>    
     <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
   </package>  
-  <package id="3" language="java" name="engine" project="DataCleaners" file="/DataCleaners/src/main/java/engine" 
+  <package id="3" language="java" name="model" project="DataCleaners" file="/DataCleaners/src/main/java/model" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="50" width="101" x="104" y="177"/>    
+    <position height="50" width="101" x="403" y="307"/>    
     <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
   </package>  
-  <package id="4" language="java" name="holisticchecks" project="DataCleaners" 
-    file="/DataCleaners/src/main/java/holisticchecks" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="50" width="107" x="79" y="87"/>    
-    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
-  </package>  
-  <package id="5" language="java" name="app" project="DataCleaners" file="/DataCleaners/src/main/java/app" 
+  <package id="4" language="java" name="report" project="DataCleaners" file="/DataCleaners/src/main/java/report" 
     binary="false" corner="BOTTOM_RIGHT">    
-    <position height="50" width="101" x="226" y="87"/>    
+    <position height="50" width="101" x="496" y="217"/>    
     <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
   </package>  
-  <dependency id="6">    
+  <package id="5" language="java" name="utils" project="DataCleaners" file="/DataCleaners/src/main/java/utils" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="50" width="101" x="544" y="487"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="6" language="java" name="utils.settings" project="DataCleaners" 
+    file="/DataCleaners/src/main/java/utils/settings" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="50" width="101" x="544" y="307"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="7" language="java" name="app" project="DataCleaners" file="/DataCleaners/src/main/java/app" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="50" width="101" x="607" y="37"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="8" language="java" name="rowchecks.api" project="DataCleaners" 
+    file="/DataCleaners/src/main/java/rowchecks/api" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="214" y="381"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="9" language="java" name="rowchecks.factory" project="DataCleaners" 
+    file="/DataCleaners/src/main/java/rowchecks/factory" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="339" y="242"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <package id="10" language="java" name="rowchecks.checks" project="DataCleaners" 
+    file="/DataCleaners/src/main/java/rowchecks/checks" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="385" y="460"/>    
+    <display autosize="true" stereotype="true" sort-features="false" accessors="true"/>  
+  </package>  
+  <dependency id="11">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="12">    
+    <bendpoint x="178" y="217"/>    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="13">    
+    <bendpoint x="217" y="521"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="14">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="15">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="16">    
+    <bendpoint x="465" y="217"/>    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="17">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="18">    
+    <bendpoint x="717" y="127"/>    
+    <bendpoint x="717" y="217"/>    
+    <bendpoint x="717" y="307"/>    
+    <bendpoint x="717" y="397"/>    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="19">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="20">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="1"/>  
   </dependency>  
-  <dependency id="7">    
-    <bendpoint x="214" y="267"/>    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="1"/>  
+  <dependency id="21">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="6"/>  
   </dependency>  
-  <dependency id="8">    
-    <bendpoint x="235" y="177"/>    
-    <bendpoint x="235" y="267"/>    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="1"/>  
+  <dependency id="22">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
   </dependency>  
-  <dependency id="9">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="2"/>  
+  <dependency id="23">    
+    <bendpoint x="627" y="217"/>    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="6"/>  
   </dependency>  
-  <dependency id="10">    
-    <end type="SOURCE" refId="5"/>    
+  <dependency id="24">    
+    <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="25">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="26">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="27">    
+    <bendpoint x="212" y="266"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="28">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="29">    
+    <bendpoint x="675" y="307"/>    
+    <bendpoint x="675" y="397"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="30">    
+    <bendpoint x="696" y="217"/>    
+    <bendpoint x="696" y="307"/>    
+    <bendpoint x="696" y="397"/>    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="31">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="10"/>  
   </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    

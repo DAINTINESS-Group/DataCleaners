@@ -9,7 +9,8 @@ import org.apache.spark.storage.StorageLevel;
 
 public class ServerRequestResult implements Serializable{
     
-    private Dataset<Row> rowCheckResults;
+    private static final long serialVersionUID = -646765944375157319L;
+	private Dataset<Row> rowCheckResults;
     private ArrayList<String> rowCheckTypes;
     private long rejectedRows = 0;
     private long invalidRows = 0;

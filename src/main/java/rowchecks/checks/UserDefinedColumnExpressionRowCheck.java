@@ -1,4 +1,4 @@
-package rowchecks;
+package rowchecks.checks;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -11,25 +11,42 @@ import javax.script.ScriptException;
 
 import org.apache.spark.sql.Row;
 
+import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
-public class UserDefinedRowCheck implements IRowCheck, Serializable{
-    
-    private String targetVariable;
-    private String comparator;
 
-    private String userVariable;
+/**
+ * The class ensures that if a condition is held in a condition column, the column is flagged OK, otherwise it is problematic.
+ * 
+ * Specifically, the idea is:
+ * if (<conditionColumn conditionComparator conditionExpression>) then
+ *    the column is flagged as OK
+ * otherwise the row is flagged as problematic
+ * 
+ * For example:
+ * if (CustomerName == 'Mitsos') then
+ *     row is OK
+ * meaning it is impossible for anyone to be named anything else but Mitsos 
+ *       
+ **/
+public class UserDefinedColumnExpressionRowCheck implements IRowCheck, Serializable{
+    
+    private static final long serialVersionUID = 7247914239045027479L;
+	private String conditionColumn;
+    private String comparator;
+    private String conditionExpression;
+    
     private transient ScriptEngine scriptEngine;
     private HashSet<String> variableColumns = new HashSet<String>();
 
-    public UserDefinedRowCheck(String targetVariable, String comparator, String userVariable)
+    public UserDefinedColumnExpressionRowCheck(String conditionColumn, String conditionComparator, String conditionExpression)
     {
-        this.targetVariable = targetVariable;
-        this.comparator = comparator;
-        this.userVariable = userVariable;
+        this.conditionColumn = conditionColumn;
+        this.comparator = conditionComparator;
+        this.conditionExpression = conditionExpression;
 
         Pattern regexPattern = Pattern.compile("[a-zA-Z]\\w*");
-        Matcher matcher = regexPattern.matcher(userVariable);
+        Matcher matcher = regexPattern.matcher(conditionExpression);
         while (matcher.find())
         {
             variableColumns.add(matcher.group());
@@ -49,11 +66,11 @@ public class UserDefinedRowCheck implements IRowCheck, Serializable{
             double targetVariableValue;
             try
             {
-                targetVariableValue = Double.parseDouble(targetVariable);
+                targetVariableValue = Double.parseDouble(conditionColumn);
             }
             catch (Exception e)
             {
-                targetVariableValue = Double.parseDouble(row.getString(row.fieldIndex(targetVariable)));
+                targetVariableValue = Double.parseDouble(row.getString(row.fieldIndex(conditionColumn)));
             }
 
             for (String variable : variableColumns)
@@ -61,7 +78,7 @@ public class UserDefinedRowCheck implements IRowCheck, Serializable{
                 scriptEngine.put(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
             }
 
-            boolean isCheckValid = (boolean)scriptEngine.eval(targetVariableValue+comparator+userVariable);
+            boolean isCheckValid = (boolean)scriptEngine.eval(targetVariableValue+comparator+conditionExpression);
             return isCheckValid ? CheckResult.PASSED : CheckResult.REJECTED;
         }
         catch(NullPointerException e)
@@ -80,6 +97,6 @@ public class UserDefinedRowCheck implements IRowCheck, Serializable{
 
     public String getCheckType() 
     {
-        return "UserDefined Check: " + targetVariable + " " + comparator + " " + userVariable;
+        return "UserDefined Check: " + conditionColumn + " " + comparator + " " + conditionExpression;
     }
 }

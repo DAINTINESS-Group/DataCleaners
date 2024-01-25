@@ -1,7 +1,7 @@
 package engine;
 
-import model.ClientRequest;
-import model.ClientRequestResponse;
+import engine.clientRequest.ClientRequest;
+import engine.clientRequest.ClientRequestResponse;
 import model.DatasetProfile;
 import model.ServerRequest;
 import model.ServerRequestResult;

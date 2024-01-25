@@ -8,7 +8,8 @@ import org.apache.spark.sql.Row;
 
 public class DatasetProfile implements Serializable{
     
-    private String alias;
+    private static final long serialVersionUID = 1L;
+	private String alias;
     private String filePath;
     private boolean fileHasHeader;
     private Dataset<Row> dataset;

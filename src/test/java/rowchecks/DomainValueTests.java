@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import rowchecks.checks.DomainValuesCheck;
 import utils.CheckResult;
 
 public class DomainValueTests extends RowCheckTest {

@@ -10,9 +10,12 @@ import org.apache.spark.sql.Row;
 import model.ServerRequest;
 import model.ServerRequestResult;
 
+@Deprecated
 public class TxtReportGenerator extends AbstractReportGenerator {
 
-    protected void generateWarningLog(ServerRequest serverRequest, String outputDirectory)
+    private static final long serialVersionUID = 7932155593757703695L;
+
+	protected void generateWarningLog(ServerRequest serverRequest, String outputDirectory)
     {
         ServerRequestResult result = serverRequest.getRequestResult();
         Dataset<Row> results = result.getRowCheckResults();
