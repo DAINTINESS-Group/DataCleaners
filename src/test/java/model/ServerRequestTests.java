@@ -24,7 +24,7 @@ public class ServerRequestTests {
     public void setUp()
     {
         SparkSession spark = new SparkConfig().getSparkSession();
-        Dataset<Row> df = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\test.csv");
+        Dataset<Row> df = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\cars_100_tests.csv");
         targetProfile = new DatasetProfile("frame", df, "somepath", true);
     }
 
@@ -34,14 +34,14 @@ public class ServerRequestTests {
         ServerRequest serverRequest = new ServerRequest(ViolatingRowPolicy.WARN);
         serverRequest.setProfile(targetProfile);
 
-        serverRequest.addRowCheck(new DomainTypeCheck("name", DomainType.ALPHA));
-        serverRequest.addRowCheck(new NumericConstraintCheck("float", -1, 0));
-        serverRequest.addRowCheck(new NotNullCheck("boolean"));
+        serverRequest.addRowCheck(new DomainTypeCheck("manufacturer", DomainType.ALPHA));
+        serverRequest.addRowCheck(new NumericConstraintCheck("tax", 0, 300));
+        serverRequest.addRowCheck(new NotNullCheck("chaos"));
 
         new ServerRequestExecutor().executeServerRequest(serverRequest);
         ServerRequestResult result = serverRequest.getRequestResult();
-        assertEquals(46, result.getRejectedRows());
-        assertEquals(46, result.getRowCheckResults().where("c1 = 'REJECTED'").count());
+        assertEquals(5, result.getRejectedRows());
+        assertEquals(5, result.getRowCheckResults().where("c2 = 'REJECTED'").count());
 
         assertEquals(0, result.getInvalidRows());
     }

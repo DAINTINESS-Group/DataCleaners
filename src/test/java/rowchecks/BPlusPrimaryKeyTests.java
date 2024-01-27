@@ -14,7 +14,7 @@ public class BPlusPrimaryKeyTests extends RowCheckTest {
     {
         rowChecks.clear();
         expectedResult = CheckResult.PASSED;
-        rowChecks.add(new BPlusTreePrimaryKeyCheck("float"));
+        rowChecks.add(new BPlusTreePrimaryKeyCheck("uniqueId"));
 
         testSet.foreach(row -> { checkRow(row);});
     }
@@ -24,11 +24,11 @@ public class BPlusPrimaryKeyTests extends RowCheckTest {
     {
         rowChecks.clear();
         excludedResult = CheckResult.REJECTED;
-        rowChecks.add(new BPlusTreePrimaryKeyCheck("name"));
+        rowChecks.add(new BPlusTreePrimaryKeyCheck("price"));
 
         testSet.foreach(row -> { checkRowWithExclusion(row);});
-
-        assertEquals(5, excludedRows.size());
+        //64 Unique values in column price. 39 Rejections.
+        assertEquals(39, excludedRows.size());
     }
 
     @Test
@@ -36,8 +36,8 @@ public class BPlusPrimaryKeyTests extends RowCheckTest {
     {
         rowChecks.clear();
         expectedResult = CheckResult.PASSED;
-        rowChecks.add(new BPlusTreePrimaryKeyCheck("float"));
-        rowChecks.add(new BPlusTreePrimaryKeyCheck("float"));
+        rowChecks.add(new BPlusTreePrimaryKeyCheck("uniqueId"));
+        rowChecks.add(new BPlusTreePrimaryKeyCheck("uniqueId"));
 
         testSet.foreach(row -> { checkRow(row);});
     }

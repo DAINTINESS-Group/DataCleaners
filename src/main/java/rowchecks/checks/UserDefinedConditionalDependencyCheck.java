@@ -85,13 +85,29 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
                 scriptEngine.put(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
             }
 
-            double conditionTargetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(conditionTargetColumn)));
+            double conditionTargetColumnValue;
+            try
+            {
+                conditionTargetColumnValue = Double.parseDouble(conditionTargetColumn);
+            }
+            catch (Exception e)
+            {
+                conditionTargetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(conditionTargetColumn)));
+            }
             boolean doesConditionApply = (boolean)scriptEngine.eval(conditionTargetColumnValue + conditionComparator + conditionUserVariable);
             //If the condition is false, we can ignore this row.
             if (!doesConditionApply) return CheckResult.PASSED;
 
             //If the condition is true, we now can check the second condition.
-            double targetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(targetColumn)));
+            double targetColumnValue;
+            try
+            {
+                targetColumnValue = Double.parseDouble(targetColumn);
+            }
+            catch (Exception e)
+            {
+                targetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(targetColumn)));
+            }
             boolean isCheckValid =  (boolean)scriptEngine.eval(targetColumnValue + targetComparator + targetExpression);
             return isCheckValid ? CheckResult.PASSED : CheckResult.REJECTED;
         }

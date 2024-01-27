@@ -33,7 +33,7 @@ public class TextReportTests extends RowCheckTest{
     public void setUp()
     {
         SparkSession spark = new SparkConfig().getSparkSession();
-        Dataset<Row> df = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\test.csv")
+        Dataset<Row> df = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\cars_100_tests.csv")
                         .withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));;
         targetProfile = new DatasetProfile("frame", df, "somepath", true);
     }
@@ -140,7 +140,7 @@ public class TextReportTests extends RowCheckTest{
         ServerRequest serverReq = new ServerRequest(policy);
         
         ArrayList<IRowCheck> rowChecks = new ArrayList<IRowCheck>();
-        rowChecks.add(new NumericConstraintCheck("zero_to_ten", 0, 9));
+        rowChecks.add(new NumericConstraintCheck("tax", 0, 145));
         serverReq.setRowChecks(rowChecks);
 
         serverReq.setProfile(targetProfile);

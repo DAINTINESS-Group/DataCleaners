@@ -13,10 +13,10 @@ public class DomainTypeTests extends RowCheckTest {
     {
         rowChecks.clear();
         expectedResult = CheckResult.PASSED;
-        rowChecks.add(new DomainTypeCheck("name", DomainType.ALPHA));
-        rowChecks.add(new DomainTypeCheck("zero_to_ten", DomainType.INTEGER));
-        rowChecks.add(new DomainTypeCheck("float", DomainType.NUMERIC));
-        rowChecks.add(new DomainTypeCheck("boolean", DomainType.BOOLEAN));
+        rowChecks.add(new DomainTypeCheck("model", DomainType.ALPHA));
+        rowChecks.add(new DomainTypeCheck("year", DomainType.INTEGER));
+        rowChecks.add(new DomainTypeCheck("mpg", DomainType.NUMERIC));
+        rowChecks.add(new DomainTypeCheck("isOldModel", DomainType.BOOLEAN));
 
 
         testSet.foreach(row -> { checkRow(row); });
@@ -27,10 +27,10 @@ public class DomainTypeTests extends RowCheckTest {
     {
         rowChecks.clear();
         expectedResult = CheckResult.REJECTED;
-        rowChecks.add(new DomainTypeCheck("float",DomainType.ALPHA));
-        rowChecks.add(new DomainTypeCheck("name",DomainType.INTEGER));
-        rowChecks.add(new DomainTypeCheck("name",DomainType.NUMERIC));
-        rowChecks.add(new DomainTypeCheck("name",DomainType.BOOLEAN));
+        rowChecks.add(new DomainTypeCheck("year",DomainType.ALPHA));
+        rowChecks.add(new DomainTypeCheck("model",DomainType.INTEGER));
+        rowChecks.add(new DomainTypeCheck("model",DomainType.NUMERIC));
+        rowChecks.add(new DomainTypeCheck("model",DomainType.BOOLEAN));
 
         testSet.foreach(row -> { checkRow(row); });
     }

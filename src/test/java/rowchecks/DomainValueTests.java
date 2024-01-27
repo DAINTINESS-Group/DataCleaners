@@ -15,16 +15,17 @@ public class DomainValueTests extends RowCheckTest {
         rowChecks.clear();
         excludedRows.clear();
         expectedResult = CheckResult.PASSED;
-        rowChecks.add(new DomainValuesCheck("zero_to_ten", new String[] {"0","1","2","3","4","5","6","7","8","9","10"}));
+        rowChecks.add(new DomainValuesCheck("manufacturer", new String[] {"audi"}));
 
         testSet.foreach(row -> { checkRow(row); });
 
         rowChecks.clear();
-        rowChecks.add(new DomainValuesCheck("name", new String[] {"Connor"}));
+        rowChecks.add(new DomainValuesCheck("transmission", new String[] {"Automatic","Manual"}));
 
         excludedResult = CheckResult.REJECTED;
         testSet.foreach(row -> { checkRowWithExclusion(row); });
-        assertEquals(excludedRows.size(),98);
+        //4 Semi-Autos -> 4 rejections
+        assertEquals(4, excludedRows.size());
     }
 
     @Test
@@ -32,7 +33,7 @@ public class DomainValueTests extends RowCheckTest {
     {
         rowChecks.clear();
         expectedResult = CheckResult.REJECTED;
-        rowChecks.add(new DomainValuesCheck("null", new String[] {"null"}));
+        rowChecks.add(new DomainValuesCheck("fuelType", new String[] {"Asteroskoni"}));
         testSet.foreach(row -> { checkRow(row); });
     }
 }

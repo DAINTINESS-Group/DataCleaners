@@ -25,8 +25,8 @@ public class FacadeTests {
         FacadeFactory facadeFactory = new FacadeFactory();
 
         facade = facadeFactory.createDataCleanerFacade();
-        facade.registerDataset("src\\test\\resources\\datasets\\test.csv", "frame1", true);
-        facade.registerDataset("src\\test\\resources\\datasets\\test.csv", "frame2", true);
+        facade.registerDataset("src\\test\\resources\\datasets\\cars_100_tests.csv", "frame1", true);
+        facade.registerDataset("src\\test\\resources\\datasets\\cars_100_tests.csv", "frame2", true);
         
     }
 
@@ -35,14 +35,13 @@ public class FacadeTests {
     {
         ClientRequest req = ClientRequest.builder()
                                         .onDataset("frame1")
-                                        .withNumericColumn("zero_to_ten", 0, 10)
-                                        .withColumnType("boolean", DomainType.BOOLEAN)
-                                        .withNumericColumn("float", 0, 1)
+                                        .withNumericColumn("price", 0, 15000)
+                                        .withColumnType("isOldModel", DomainType.BOOLEAN)
+                                        .withNumericColumn("mpg", 0, 100)
                                         .build();
-        System.out.println(req.getNumberConstraintChecks().size());
         ClientRequestResponse response = facade.executeClientRequest(req);
 
-        assertEquals(54, response.getNumberOfRejectedRows());
+        assertEquals(59, response.getNumberOfRejectedRows());
         assertEquals(0, response.getNumberOfInvalidRows());
         
         req = ClientRequest.builder()
@@ -50,12 +49,11 @@ public class FacadeTests {
                             .withColumnType("boolean123", DomainType.NUMERIC)
                             .build();
 
-        System.out.println(req.getNumberConstraintChecks().size());
 
         response = facade.executeClientRequest(req);
 
         assertEquals(0, response.getNumberOfRejectedRows());
-        assertEquals(100, response.getNumberOfInvalidRows());
+        assertEquals(103, response.getNumberOfInvalidRows());
     }
 
     @Test

@@ -14,7 +14,7 @@ public class BPlusForeignKeyTests extends RowCheckTest {
     {
         rowChecks.clear();
         expectedResult = CheckResult.PASSED;
-        rowChecks.add(new BPlusTreeForeignKeyCheck("negative_to_positive", testSet, "negative_to_positive"));
+        rowChecks.add(new BPlusTreeForeignKeyCheck("price", testSet, "price"));
 
         testSet.foreach(row -> { checkRow(row); });
     }
@@ -25,9 +25,10 @@ public class BPlusForeignKeyTests extends RowCheckTest {
         rowChecks.clear();
         excludedRows.clear();
         excludedResult = CheckResult.REJECTED;
-        rowChecks.add(new BPlusTreeForeignKeyCheck("negative_to_positive", testSet2, "values"));
+        rowChecks.add(new BPlusTreeForeignKeyCheck("taxedPrice", testSet2, "price"));
 
         testSet.foreach(row -> { checkRowWithExclusion(row); });
-        assertEquals(98, excludedRows.size());
+        //13 instances of taxedPrices exist in the price column. So 90 exclusions
+        assertEquals(90, excludedRows.size());
     }
 }

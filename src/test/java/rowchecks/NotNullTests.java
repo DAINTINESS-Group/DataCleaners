@@ -1,5 +1,7 @@
 package rowchecks;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import rowchecks.checks.NotNullCheck;
@@ -11,13 +13,12 @@ public class NotNullTests extends RowCheckTest{
     public void notNullGoodDayTest()
     {
         rowChecks.clear();
-        expectedResult = CheckResult.PASSED;
-        rowChecks.add(new NotNullCheck("name"));
-        testSet.foreach(row -> { checkRow(row); });
+        excludedRows.clear();
+        excludedResult = CheckResult.REJECTED;
+        rowChecks.add(new NotNullCheck("chaos"));
 
-        rowChecks.clear();
-        expectedResult = CheckResult.REJECTED;
-        rowChecks.add(new NotNullCheck("null"));
-        testSet.foreach(row -> { checkRow(row); });
+        testSet.foreach(row -> { checkRowWithExclusion(row); });
+        //5 Null values, 5 rejections.
+        assertEquals(5, excludedRows.size());
     }
 }

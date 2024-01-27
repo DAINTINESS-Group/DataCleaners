@@ -1,4 +1,4 @@
-Numeric Constraint Check On zero_to_ten:[0.0,9.0]
-Rejected Lines: 42 49 51 55 59 84 
+Numeric Constraint Check On tax:[0.0,145.0]
+Rejected Lines: 2 20 23 25 26 34 35 36 37 43 56 57 66 67 69 78 95 
 Invalid Lines: 
 

@@ -1,5 +1,7 @@
 package utils;
 
+import org.apache.spark.SparkException;
+import org.apache.spark.sql.AnalysisException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
@@ -16,7 +18,7 @@ public class AggregationVariable {
     }
 
     //TO-DO: If we add COUNT aggregator, see what can be done with Long Return type.
-    public double getAggregatedValue(Dataset<Row> df)
+    public double getAggregatedValue(Dataset<Row> df) throws AnalysisException, SparkException
     {
         switch (aggregation.toUpperCase())
         {

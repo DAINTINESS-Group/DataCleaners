@@ -17,6 +17,7 @@ public abstract class RowCheckTest {
     SparkSession spark;
     protected static Dataset<Row> testSet;
     protected static Dataset<Row> testSet2;
+    protected static Dataset<Row> formatSet;
 
     static ArrayList<IRowCheck> rowChecks = new ArrayList<IRowCheck>();
     static ArrayList<Row> excludedRows = new ArrayList<Row>();;
@@ -27,8 +28,10 @@ public abstract class RowCheckTest {
     public void setUp()
     {
         spark = new SparkConfig().getSparkSession();
-        testSet = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\test.csv");
-        testSet2 = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\test2.csv");
+        testSet = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\cars_100_tests.csv");
+        testSet2 = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\cars_100_tests.csv");
+        formatSet = spark.read().option("header",true).csv("src\\test\\resources\\datasets\\formatTests.csv");
+
     }
 
     public static void checkRow(Row row)

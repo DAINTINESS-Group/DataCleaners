@@ -103,11 +103,20 @@ public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, 
                 aggregationVariables.add(aggrVar);
             }
         }
-
+        
         for (AggregationVariable av : aggregationVariables)
         {
-            String translatedName = aggregationVariableTranslator.get(av.getFullName());
-            aggregatedColumns.put(translatedName, av.getAggregatedValue(targetDataset));
+            try
+            {
+                String translatedName = aggregationVariableTranslator.get(av.getFullName());
+                aggregatedColumns.put(translatedName, av.getAggregatedValue(targetDataset));
+            }
+            catch (Exception e)
+            {
+                //Aggregated column is missing/invalid. Let execution throw IllegalArgument by not including
+                //the variable for the ScriptEngine.
+                continue;
+            }
         }
         this.translatedUserVariable = translatedUserVariable;
     }
