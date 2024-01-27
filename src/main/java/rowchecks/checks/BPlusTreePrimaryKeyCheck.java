@@ -11,6 +11,11 @@ import rowchecks.api.IRowCheck;
 import utils.BPlusTreeWrapper;
 import utils.CheckResult;
 
+/**
+ * This class represents a <code>RowCheck</code> responsible for checking whether a column contains unique (and not
+ * null) values.
+ * @param targetColumn The name of the column which must contain unique and not null values.
+ */
 public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
 
 	private static final long serialVersionUID = 4887311250208642538L;
@@ -46,7 +51,7 @@ public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
         }
         catch (NullPointerException e)
         {
-            return CheckResult.MISSING_VALUE;
+            return CheckResult.REJECTED;
         }
         return CheckResult.INTERNAL_ERROR;
     }

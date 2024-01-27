@@ -17,16 +17,32 @@ import utils.Comparator;
  * THe class ensures that if a condition is held in a condition column, a respective target condition is held in a target column.
  * 
  * Specifically, the idea is:
- * if (<conditionColumn conditionComparator conditionExpression>) then
- *    <(targetColumn targetComparator targetExpression> must also hold
+ * <pre>
+ * if (conditionColumn conditionComparator conditionExpression) then
+ *    (targetColumn targetComparator targetExpression>) must also hold
+ * </pre>
  * otherwise the row is flagged as problematic
  * The row is flagged as OK if the first condition check doees not hold
  * 
  * For example:
+ * <pre>
  * if (CustomerName == 'Mitsos') then
- *     (CustomaerAge < 45)
+ *     if (CustomaerAge < 45) then
+ *       row is PASSED
+ *     else
+ *      row is REJECTED
+ * else
+ *  row is PASSED
+ * </pre>
  * meaning it is impossible for anyone named mitsos to be older than 45
- *       
+ *  
+ *  @param conditionTargetColumn A column name or number
+ *  @param conditionComparator A symbol used in comparison ex >, <, ==, >=
+ *  @param conditionExpression A mathematical expression that can contain columns
+ * 
+ *  @param targetColumn A column name or number
+ *  @param targetComparator A symbol used in comparison ex >, <, ==, >=
+ *  @param targetExpression A mathematical expression that can contain columns
  */
 public class UserDefinedConditionalDependencyCheck implements IRowCheck, Serializable{
 

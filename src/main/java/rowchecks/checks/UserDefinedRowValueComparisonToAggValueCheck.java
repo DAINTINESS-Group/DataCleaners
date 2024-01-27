@@ -19,19 +19,28 @@ import utils.Comparator;
 
 
 /**
- * The class ensures that if a condition is held in a condition column, the column is flagged OK, otherwise it is problematic.
+ * The class ensures that if a condition is held in a condition column, the column is flagged PASSED, otherwise it is problematic.
  * THe condition relates the value of the current row to an aggregate statistic over the column
  * 
  * Specifically, the idea is:
- * if (<conditionColumn conditionComparator conditionExpression>) then
- *    the column is flagged as OK
- * otherwise the row is flagged as problematic
+ * <pre>
+ * if (conditionColumn conditionComparator conditionExpression) then
+ *    row is PASSED
+ * else
+ *    row is REJECTED
+ * </pre>
+ * 
  * 
  * For example:
+ * <pre>
  * if (EmplSalary >= AVG(EmpSalary)+145*7 ) then
- *     row is OK
+ *     row is PASSED
+ * </pre>
  * meaning we flag as problematic all employees with salary lower than AVG(EmpSalary)+145*7  
  *       
+ *  @param conditionColumn A column name or number
+ *  @param comparator A symbol used in comparison ex >, <, ==, >=
+ *  @param conditionExpression A mathematical expression that can contain columns
  **/
 
 public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, Serializable{
@@ -40,8 +49,8 @@ public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, 
 	private String conditionColumn;
     private String comparator;
     private String conditionExpression;
-    private String translatedUserVariable;
 
+    private String translatedUserVariable;
     private HashSet<String> variableColumns;
     private HashMap<String, Double> aggregatedColumns;
 

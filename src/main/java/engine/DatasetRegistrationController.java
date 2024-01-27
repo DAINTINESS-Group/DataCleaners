@@ -13,6 +13,16 @@ import config.SparkConfig;
 import model.DatasetProfile;
 import utils.RegistrationResponse;
 
+/**
+ * This class is responsible for registering <code>Datasets</code> as <code>DatasetProfiles</code> and storing them
+ * for future use by other components. We make use of {@link #registerDataset(String path, String alias, boolean hasHeader)} to register a
+ * CSV file and {@link #registerDataset(String username, String password, String databaseType, String url, String tableName, String alias)} to register a table from a database.
+ * All aliases must be unique. A <code>RegistrationResponse</code> is returned in both cases to represent if the registration
+ * was succesful.
+ * 
+ * @see RegistrationResponse
+ * @see DatasetProfile
+ */
 public class DatasetRegistrationController {
     
     private ArrayList<DatasetProfile> datasetProfiles = new ArrayList<DatasetProfile>();

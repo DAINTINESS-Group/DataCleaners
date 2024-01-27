@@ -18,6 +18,13 @@ import utils.settings.UserDefinedGroupSettings;
 import utils.settings.UserDefinedHolisticSettings;
 import utils.settings.UserDefinedRowSettings;
 
+/**
+ * This class is responsible for translating a <code>ClientRequest</code> to a <code>ServerRequest</code>. It transform all <code>Settings</code>
+ * objects into their respective Checks and loads them into a new <code>ServerRequest</code> to be ready for execution.
+ * @see ClientRequest
+ * @see ServerRequest
+ * @see utils.settings
+ */
 public class ClientToServerRequestTranslator {
 
 	public ServerRequest createServerRequest(ClientRequest clientReq, ArrayList<DatasetProfile> profiles)

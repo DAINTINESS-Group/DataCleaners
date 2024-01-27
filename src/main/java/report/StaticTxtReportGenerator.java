@@ -10,6 +10,10 @@ import org.apache.spark.sql.Row;
 import model.ServerRequest;
 import model.ServerRequestResult;
 
+/**
+ * This class is responsible for generating a report from a <code>DatasetProfile</code> with at least one
+ * completed <code>ServerRequest</code>. Log reports are generated in TXT format, one for each <code>ServerRequest</code>
+ */
 public class StaticTxtReportGenerator extends AbstractReportGenerator {
     
     private static final long serialVersionUID = 4847761730341782802L;

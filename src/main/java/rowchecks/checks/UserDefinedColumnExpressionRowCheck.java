@@ -15,18 +15,27 @@ import utils.Comparator;
 
 
 /**
- * The class ensures that if a condition is held in a condition column, the column is flagged OK, otherwise it is problematic.
+ * The class ensures that if a condition is held in a condition column, the column is flagged PASSED, otherwise it is problematic.
  * 
  * Specifically, the idea is:
- * if (<conditionColumn conditionComparator conditionExpression>) then
- *    the column is flagged as OK
- * otherwise the row is flagged as problematic
+ * <pre>
+ * if (conditionColumn conditionComparator conditionExpression) then
+ *    row is PASSED
+ * else
+ *    row is REJECTED
+ * </pre>
  * 
  * For example:
+ * <pre>
  * if (CustomerName == 'Mitsos') then
- *     row is OK
+ *     row is PASSED
+ * </pre>
  * meaning it is impossible for anyone to be named anything else but Mitsos 
- *       
+ * 
+ *  @param conditionColumn A column name or number
+ *  @param comparator A symbol used in comparison ex >, <, ==, >=
+ *  @param conditionExpression A mathematical expression that can contain columns
+ * 
  **/
 public class UserDefinedColumnExpressionRowCheck implements IRowCheck, Serializable{
     

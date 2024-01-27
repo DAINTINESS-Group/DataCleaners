@@ -6,6 +6,14 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 
+/**
+ * This is a helper class that holds an aggregation variable. An aggregation variable is defined as a variable
+ * within a mathematical expression used in a <code>UserDefinedRowValueComparisonToAggValueCheck</code> that makes
+ * use of an aggregation function. Current aggregation functions supported: SUM, MIN, MAX, AVG
+ * @param fullName The full name of the variable ex. AVG(price)
+ * @param aggregation The aggregation function in string from fullName ex. AVG
+ * @param variable The name of the variable from fullName ex. price
+ */
 public class AggregationVariable {
     private String fullName;
     private String aggregation;
@@ -17,7 +25,6 @@ public class AggregationVariable {
         this.variable = variable;
     }
 
-    //TO-DO: If we add COUNT aggregator, see what can be done with Long Return type.
     public double getAggregatedValue(Dataset<Row> df) throws AnalysisException, SparkException
     {
         switch (aggregation.toUpperCase())

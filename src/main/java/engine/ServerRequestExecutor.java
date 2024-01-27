@@ -15,6 +15,12 @@ import model.ServerRequestResult;
 import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
+/**
+ * This class is responsible for executing a <code>ServerRequest</code> and producing a <code>ServerRequestResult</code>
+ * which it stores within the <code>ServerRequest</code>.
+ * @see ServerRequest
+ * @see ServerRequestResult
+ */
 public class ServerRequestExecutor implements Serializable {
     
     private static final long serialVersionUID = 7963000311509095105L;

@@ -9,6 +9,14 @@ import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 import utils.DomainType;
 
+/**
+ * This class represents a <code>RowCheck</code> responsible for checking whether a column's values
+ * are of a specific type. The currently support types are within the <code>DomainType</code> enumerator.
+ * @param targetColumn The name of a column within our targeted Dataset that we will check.
+ * @param type A <code>DomainType</code> variable that defines the type we need to check.
+ * 
+ * @see DomainType
+ */
 public class DomainTypeCheck implements IRowCheck, Serializable {
 
     private static final long serialVersionUID = 5599034285939385721L;

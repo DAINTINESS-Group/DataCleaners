@@ -4,6 +4,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.SparkSession;
 
+/**
+ * This class is responsible for initializing the SparkSession object any component might require.
+ */
 public class SparkConfig {
     
     private String appName = "Java Spark SQL";

@@ -15,7 +15,16 @@ import utils.BPlusTreeWrapper;
 import utils.CheckResult;
 
 
-
+/**
+ * This class represents a <code>RowCheck</code> responsible for checking a Foreign Key relationship between
+ * two columns.
+ * @param targetColumn The name of a column from our targeted Dataset
+ * @param foreignKeyDataset The dataset from which we extract another column to test for foreign key relationship. This can
+ * be the same as the targeted Dataset.
+ * @param foreignKeyColumn The name of a column from the foreignKeyDataset, which will be
+ * the existing values from which we test the foreign key relationship with. These values are stored in a disk-based BPlusTree
+ * data structure, and thus rely heavily on the disk capacity.
+ */
 public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
  
     private static final long serialVersionUID = 1915838995252217241L;

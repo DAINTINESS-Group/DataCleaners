@@ -7,6 +7,25 @@ import org.apache.spark.sql.Row;
 import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 
+/**
+ * This class represents a <code>RowCheck</code> responsible for checking whether a column with
+ * numeric values has values that are contained in an interval. The interval is defined by a min and a
+ * max value, as well as whether those values (left and right respectively) are inclusive.
+ * For example, if we need to test a value with minValue = 2, maxValue = 5, isLeftInclusive = true and
+ * isRightInclusive = false then the check is:
+ * <pre>
+ *  if value is in [2, 5)
+ *      value is CheckResult.PASSED
+ *  else
+ *      value is CheckResult.PASSED
+ * </pre>
+ * @param targetColumn The name of a column from our targeted Dataset that will be checked.
+ * @param minValue The left / minimum value of the interval
+ * @param maxValue The right / maximum value of the interval
+ * @param isLeftInclusive A boolean that defines whether the value can be equal to the minimum value.
+ * @param isRightInclusive A boolean that defines whether the value can be equal to the maximum value. <br>
+
+ */
 public class NumericConstraintCheck implements IRowCheck, Serializable{
 
     private static final long serialVersionUID = 6492963892432158520L;

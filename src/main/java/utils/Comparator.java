@@ -1,5 +1,9 @@
 package utils;
 
+/**
+ * Helper class that assists with definition of a comparing symbol. Additionally helps with using
+ * comparators to compare values.
+ */
 public class Comparator {
     public final static String EQUAL = "==";
     public final static String NOT_EQUAL = "!=";

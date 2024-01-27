@@ -28,7 +28,6 @@ import utils.settings.UserDefinedGroupSettings;
 import utils.settings.UserDefinedHolisticSettings;
 import utils.settings.UserDefinedRowSettings;
 
-//TODO add defensive code for null parameters
 public class RowCheckFactory {
 
 	ArrayList<DatasetProfile> profiles;

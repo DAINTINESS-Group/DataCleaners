@@ -16,6 +16,47 @@ import utils.settings.UserDefinedGroupSettings;
 import utils.settings.UserDefinedHolisticSettings;
 import utils.settings.UserDefinedRowSettings;
 
+/**
+ * This class is responsible for delivering from our Client to our components, using the Facade, a number of
+ * checks that are to be tested. Proper initialization of this class is through the <code> Builder </code>. Objects of
+ * this class are typically translated to ServerRequests using <code>ClientToServerRequestTranslator</code> for execution.
+ * @param targetDataset A string that defines the dataset's alias, registered in our application,
+ *  that the client request talks about. Must always be defined and not null via {@link Builder#onDataset(String)}
+ * @param violationPolicy A <code>ViolatingRowPolicy</code> that defines how rejected rows are treated when a report is
+ * generated. Is <code>ViolatingRowPolicy.WARN</code> by default and can be set via {@link Builder#withViolationPolicy(ViolatingRowPolicy)}
+ * @param primaryKeyChecks A group of <code>PrimaryKeySettings</code> that define <code>PrimaryKeyChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withPrimaryKeys(String)}, with subsequent added with
+ * each call.
+ * @param foreignKeyChecks A group of <code>ForeignKeySettings</code> that define <code>ForeignKeyChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withForeignKeys(String, String, String)}, with subsequent added with
+ * each call.
+ * @param formatChecks A group of <code>FormatSettings</code> that define <code>FormatChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withFormat(String, FormatType, String)} or
+ * {@link Builder#withFormat(String, FormatType)}, with subsequent added with each call.
+ * @param domainTypeChecks A group of <code>DomainTypeSettings</code> that define <code>DomainTypeChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withColumnType(String, DomainType)}, with subsequent added with
+ * each call.
+ * @param domainValuesChecks A group of <code>DomainValueSettings</code> that define <code>DomainValuesChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withColumnValues(String, String[])}, with subsequent added with
+ * each call.
+ * @param notNullChecks A group of <code>NotNullSettings</code> that define <code>NotNullChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withNoNullValues(String)}, with subsequent added with
+ * each call.
+ * @param numberConstraintChecks A group of <code>NumberConstraintSettings</code> that define <code>NumberConstraintChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withNumericColumn(String, double, double)} or
+ * {@link Builder#withNumericColumn(String, double, double, boolean, boolean)}, with subsequent added with each call.
+ * @param userDefinedRowChecks A group of <code>UserDefinedRowSettings</code> that define <code>UserDefinedColumnExpressionRowChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withCustomCheck(String, String, String)}, with subsequent added with each call.
+ * @param userDefinedGroupChecks A group of <code>UserDefinedGroupSettings</code> that define <code>UserDefinedConditionalDependencyChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withCustomConditionalCheck(String, String, String, String, String, String)}, with subsequent added with
+ * each call.
+ * @param userDefinedHolisticChecks A group of <code>UserDefinedHolisticSettings</code> that define <code>UserDefinedRowValueComparisonToAggValueChecks</code> to be run on
+ * the target dataset. A single check is defined via {@link Builder#withCustomHollisticCheck(String, String, String)}, with subsequent added with
+ * each call.
+ * @see ViolatingRowPolicy
+ * @see utils.settings
+ * @see engine.ClientToServerRequestTranslator
+ */
 public class ClientRequest {
 
     private String targetDataset;

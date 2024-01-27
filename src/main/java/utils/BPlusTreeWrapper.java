@@ -10,6 +10,10 @@ import com.sleepycat.je.EnvironmentConfig;
 
 import btree4j.utils.io.FileUtils;
 
+/**
+ * This helper class represents a single database that uttilises Berkley DB's BPlusTree structures to hold key,value
+ * pairs in the disk.
+ */
 public class BPlusTreeWrapper implements Serializable{
     
     private static final long serialVersionUID = 10561941102347773L;

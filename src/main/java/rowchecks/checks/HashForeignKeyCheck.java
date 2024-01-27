@@ -10,7 +10,7 @@ import org.apache.spark.sql.Row;
 
 import rowchecks.api.IRowCheck;
 import utils.CheckResult;
-
+@Deprecated
 public class HashForeignKeyCheck implements IRowCheck, Serializable{
 
     private static final long serialVersionUID = -2067519723133476527L;

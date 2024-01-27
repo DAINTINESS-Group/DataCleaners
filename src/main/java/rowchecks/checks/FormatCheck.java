@@ -9,8 +9,15 @@ import rowchecks.api.IRowCheck;
 import utils.CheckResult;
 import utils.FormatType;
 
+/**
+ * This class represents a <code>RowCheck</code> responsible for checking whether a column follows a predefined
+ * format. The currently supported formats are defined by the <code>FormatType</code> enumerator. 
+ * @param targetColumn The name of a column from our targeted Dataset that will be checked.
+ * @param type A <code>FormatType</code> which defines the format the targetColumn must follow
+ * 
+ * @see FormatType
+ */
 public class FormatCheck implements IRowCheck, Serializable {
-
     private static final long serialVersionUID = 8326484956970093220L;
 	private String targetColumn;
     private FormatType type;
