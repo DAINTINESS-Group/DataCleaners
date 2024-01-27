@@ -5,14 +5,13 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import org.apache.spark.sql.Row;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import rowchecks.api.IRowCheck;
 import utils.CheckResult;
+import utils.Comparator;
 
 
 /**
@@ -36,7 +35,7 @@ public class UserDefinedColumnExpressionRowCheck implements IRowCheck, Serializa
     private String comparator;
     private String conditionExpression;
     
-    private transient ScriptEngine scriptEngine;
+    private transient Expression evaluator;
     private HashSet<String> variableColumns = new HashSet<String>();
 
     public UserDefinedColumnExpressionRowCheck(String conditionColumn, String conditionComparator, String conditionExpression)
@@ -57,37 +56,41 @@ public class UserDefinedColumnExpressionRowCheck implements IRowCheck, Serializa
     {
         try
         {
-            if (scriptEngine == null)
+            if (evaluator == null)
             {
-                ScriptEngineManager manager = new ScriptEngineManager();
-                scriptEngine = manager.getEngineByName("js");
+                ExpressionBuilder builder = new ExpressionBuilder(conditionExpression);
+                for (String variable : variableColumns)
+                {
+                    builder = builder.variable(variable);
+                }
+                evaluator = builder.build();
             }
 
-            double targetVariableValue;
+            double conditionColumnValue;
             try
             {
-                targetVariableValue = Double.parseDouble(conditionColumn);
+                conditionColumnValue = Double.parseDouble(conditionColumn);
             }
             catch (Exception e)
             {
-                targetVariableValue = Double.parseDouble(row.getString(row.fieldIndex(conditionColumn)));
+                conditionColumnValue = Double.parseDouble(row.getString(row.fieldIndex(conditionColumn)));
             }
 
             for (String variable : variableColumns)
             {
-                scriptEngine.put(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
+                evaluator.setVariable(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
             }
 
-            boolean isCheckValid = (boolean)scriptEngine.eval(targetVariableValue+comparator+conditionExpression);
+            double expressionResult = evaluator.evaluate();
+
+
+            boolean isCheckValid = Comparator.compareValues(conditionColumnValue, comparator, expressionResult);
+
             return isCheckValid ? CheckResult.PASSED : CheckResult.REJECTED;
         }
         catch(NullPointerException e)
         {
             return CheckResult.MISSING_VALUE;
-        }
-        catch (ScriptException e)
-        {
-            return CheckResult.ILLEGAL_FIELD;
         }
         catch (IllegalArgumentException e)
         {

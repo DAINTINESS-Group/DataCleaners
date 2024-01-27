@@ -7,16 +7,15 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import rowchecks.api.IRowCheck;
 import utils.AggregationVariable;
 import utils.CheckResult;
+import utils.Comparator;
 
 
 /**
@@ -46,7 +45,7 @@ public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, 
     private HashSet<String> variableColumns;
     private HashMap<String, Double> aggregatedColumns;
 
-    private transient ScriptEngine scriptEngine;
+    private transient Expression evaluator;
 
     public UserDefinedRowValueComparisonToAggValueCheck(String conditionColumn, String comparator, String conditionExpression,
                                     Dataset<Row> targetDataset)
@@ -124,14 +123,22 @@ public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, 
     public CheckResult check(Row row) {
         try
         {
-            if (scriptEngine == null)
+            if (evaluator == null)
             {
-                ScriptEngineManager manager = new ScriptEngineManager();
-                scriptEngine = manager.getEngineByName("js");
-
+                ExpressionBuilder builder = new ExpressionBuilder(translatedUserVariable);
                 for (String key : aggregatedColumns.keySet())
                 {
-                    scriptEngine.put(key, aggregatedColumns.get(key));
+                    builder = builder.variable(key);
+                }
+                for (String var : variableColumns)
+                {
+                    builder = builder.variable(var);
+                }
+
+                evaluator = builder.build();
+                for (String key : aggregatedColumns.keySet())
+                {
+                    evaluator.setVariable(key, aggregatedColumns.get(key));
                 }
             }
             
@@ -149,19 +156,16 @@ public class UserDefinedRowValueComparisonToAggValueCheck implements IRowCheck, 
             
             for (String variable : variableColumns)
             {
-                scriptEngine.put(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
+                evaluator.setVariable(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
             }
 
-            boolean isCheckValid = (boolean)scriptEngine.eval(targetVariableValue+comparator+translatedUserVariable);
+            double conditionExpressionValue = evaluator.evaluate();
+            boolean isCheckValid = Comparator.compareValues(targetVariableValue, comparator, conditionExpressionValue);
             return isCheckValid ? CheckResult.PASSED : CheckResult.REJECTED;
         }
         catch(NullPointerException e)
         {
             return CheckResult.MISSING_VALUE;
-        }
-        catch (ScriptException e)
-        {
-            return CheckResult.ILLEGAL_FIELD;
         }
         catch (IllegalArgumentException e)
         {

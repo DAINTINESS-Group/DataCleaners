@@ -5,6 +5,7 @@ import engine.IDataCleanerFacade;
 import engine.clientRequest.ClientRequest;
 import engine.clientRequest.ClientRequestResponse;
 import utils.Comparator;
+import utils.DomainType;
 import utils.ReportType;
 import utils.ViolatingRowPolicy;
 
@@ -18,24 +19,25 @@ public class Client {
 
         facade = facadeFactory.createDataCleanerFacade();
 
-        facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame1", true);
+        facade.registerDataset("src\\test\\resources\\datasets\\cars_100k.csv", "frame1", true);
         facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame2", true);
     
         final long startTime = System.currentTimeMillis();
         //TO-DO: Performance issue when using price/mileage. Large numbers..?
         ClientRequest req = ClientRequest.builder()
                             .onDataset("frame1")
-                            .withColumnValues("manufacturer", new String[] {"audi","bmw","ford","vauxhall","vw","hyundi"})
-                            .withColumnValues("transmission", new String[] {"Manual"})
-                            .withColumnValues("fuelType", new String[] {"Diesel"})
-                            .withCustomCheck("year", "<", "2016") 
-                            .withCustomConditionalCheck("engineSize", ">", "1.5", "tax", Comparator.LESS_EQUAL, "145")
-                            .withCustomHollisticCheck("mpg", ">=", "AVG(mpg)")
+                            .withColumnType("price", DomainType.INTEGER)
+                            .withColumnValues("manufacturer", new String[] {"audi", "vauxhall"})
+                            .withForeignKeys("manufacturer", "frame2", "manufacturer")
+                            .withCustomHollisticCheck("price", Comparator.GREATER_EQUAL, "AVG(price)")
+                            .withCustomConditionalCheck("tax", ">", "1", "price", "<=", "price*tax")
+                            .withNumericColumn("engineSize", 0, 3, true, true)
                             .withViolationPolicy(ViolatingRowPolicy.ISOLATE) 
                             .build();
         
         ClientRequestResponse response = facade.executeClientRequest(req);
-        //99 rejections, no invalid, 4 passed
+        //101533 rejected entries
+        //9353 Invalid due to missing engineSize
         System.out.println("==========RESPONSE RESULT TO CLIENT============");
         System.out.println("Succesful: " + response.isSuccesful());
         System.out.println("Rejected Rows: " + response.getNumberOfRejectedRows());

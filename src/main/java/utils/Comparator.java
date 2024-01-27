@@ -9,4 +9,27 @@ public class Comparator {
 
     public final static String LESS = "<";
     public final static String LESS_EQUAL = "<=";
+
+
+    public static boolean compareValues(double value1, String comparator, double value2) throws IllegalArgumentException
+    {
+        switch(comparator)
+        {
+            case EQUAL:
+                return value1 == value2;
+            case NOT_EQUAL:
+                return value1 != value2;
+            case GREATER:
+                return value1 > value2;
+            case GREATER_EQUAL:
+                return value1 >= value2;
+            case LESS:
+                return value1 < value2;
+            case LESS_EQUAL:
+                return value1 <= value2;
+            default:
+                throw new IllegalArgumentException("Invalid Comparator use of " + comparator + " comparator. Only valid" +
+                "comparators are: ==, !=, >, >=, <, <=");
+        }
+    }
 }

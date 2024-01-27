@@ -5,14 +5,13 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import org.apache.spark.sql.Row;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import rowchecks.api.IRowCheck;
 import utils.CheckResult;
+import utils.Comparator;
 
 /**
  * THe class ensures that if a condition is held in a condition column, a respective target condition is held in a target column.
@@ -34,13 +33,14 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
     private static final long serialVersionUID = 1L;
 	private String conditionTargetColumn;
     private String conditionComparator;
-    private String conditionUserVariable;
+    private String conditionExpression;
 
     private String targetColumn; 
     private String targetComparator;
     private String targetExpression;
 
-    private transient ScriptEngine scriptEngine;
+    private transient Expression conditionEvaluator;
+    private transient Expression targetEvaluator;
     private HashSet<String> variableColumns = new HashSet<String>();
 
 
@@ -50,7 +50,7 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
     {
         this.conditionTargetColumn = conditionColumn;
         this.conditionComparator = conditionComparator;
-        this.conditionUserVariable = conditionExpression;
+        this.conditionExpression = conditionExpression;
 
         this.targetColumn = targetColumn;
         this.targetComparator = targetComparator;
@@ -73,16 +73,27 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
     public CheckResult check(Row row) {
         try
         {
-            if (scriptEngine == null)
+            if (conditionEvaluator == null || targetEvaluator == null)
             {
-                ScriptEngineManager manager = new ScriptEngineManager();
-                scriptEngine = manager.getEngineByName("js");
+                ExpressionBuilder conditionEvalBuilder = new ExpressionBuilder(conditionExpression);
+                ExpressionBuilder targetEvalBuilder = new ExpressionBuilder(targetExpression);
+
+                for (String variable : variableColumns)
+                {
+                    conditionEvalBuilder = conditionEvalBuilder.variable(variable);
+                    targetEvalBuilder = targetEvalBuilder.variable(variable);
+                }
+
+                conditionEvaluator = conditionEvalBuilder.build();
+                targetEvaluator = targetEvalBuilder.build();
             }
 
             //Calculate all variable values
             for (String variable : variableColumns)
             {
-                scriptEngine.put(variable, Double.parseDouble(row.getString(row.fieldIndex(variable))));
+                double varValue = Double.parseDouble(row.getString(row.fieldIndex(variable)));
+                conditionEvaluator.setVariable(variable, varValue);
+                targetEvaluator.setVariable(variable, varValue);
             }
 
             double conditionTargetColumnValue;
@@ -94,7 +105,9 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
             {
                 conditionTargetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(conditionTargetColumn)));
             }
-            boolean doesConditionApply = (boolean)scriptEngine.eval(conditionTargetColumnValue + conditionComparator + conditionUserVariable);
+            double conditionExpressionValue = conditionEvaluator.evaluate();
+
+            boolean doesConditionApply = Comparator.compareValues(conditionTargetColumnValue, conditionComparator, conditionExpressionValue);
             //If the condition is false, we can ignore this row.
             if (!doesConditionApply) return CheckResult.PASSED;
 
@@ -108,16 +121,13 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
             {
                 targetColumnValue = Double.parseDouble(row.getString(row.fieldIndex(targetColumn)));
             }
-            boolean isCheckValid =  (boolean)scriptEngine.eval(targetColumnValue + targetComparator + targetExpression);
+            double targetExpressionValue = targetEvaluator.evaluate();
+            boolean isCheckValid = Comparator.compareValues(targetColumnValue, targetComparator, targetExpressionValue);
             return isCheckValid ? CheckResult.PASSED : CheckResult.REJECTED;
         }
         catch(NullPointerException e)
         {
             return CheckResult.MISSING_VALUE;
-        }
-        catch (ScriptException e)
-        {
-            return CheckResult.ILLEGAL_FIELD;
         }
         catch (IllegalArgumentException e)
         {
@@ -127,7 +137,7 @@ public class UserDefinedConditionalDependencyCheck implements IRowCheck, Seriali
 
     @Override
     public String getCheckType() {
-        return "UserDefined Check If " + conditionTargetColumn + " " + conditionComparator + " " + conditionUserVariable 
+        return "UserDefined Check If " + conditionTargetColumn + " " + conditionComparator + " " + conditionExpression 
             + " then " + targetColumn + " " + targetComparator + " " + targetExpression;
     }
     
