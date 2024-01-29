@@ -1,6 +1,7 @@
 package engine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +55,7 @@ public class FacadeTests {
 
         assertEquals(0, response.getNumberOfRejectedRows());
         assertEquals(103, response.getNumberOfInvalidRows());
+        assertFalse(response.isSuccesful());
     }
 
     @Test

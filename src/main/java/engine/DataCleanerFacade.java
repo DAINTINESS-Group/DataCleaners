@@ -32,14 +32,26 @@ public class DataCleanerFacade implements IDataCleanerFacade {
 
     public ClientRequestResponse executeClientRequest(ClientRequest clientRequest)
     {
-        DatasetProfile targetProfile = getProfile(clientRequest.getTargetDataset());
-        ServerRequest serverRequest = translateClientToServerRequest(clientRequest);
-        targetProfile.addServerRequest(serverRequest);
-        serverRequest.setProfile(targetProfile);
+        try
+        {
+            DatasetProfile targetProfile = getProfile(clientRequest.getTargetDataset());
+            ServerRequest serverRequest = translateClientToServerRequest(clientRequest);
+            targetProfile.addServerRequest(serverRequest);
+            serverRequest.setProfile(targetProfile);
+            
+            if (serverRequest.getRowChecks().size() == 0)
+            {
+                return new ClientRequestResponse("No row checks registered.");
+            }
 
-        ServerRequestResult serverResult = executeServerRequest(serverRequest);
-
-        return replyToClientRequest(serverResult);
+            ServerRequestResult serverResult = executeServerRequest(serverRequest);
+    
+            return replyToClientRequest(serverResult);
+        }
+        catch (NullPointerException e)
+        {
+            return new ClientRequestResponse(e.toString());
+        }
     }
 
 

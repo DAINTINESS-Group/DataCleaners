@@ -46,7 +46,7 @@ public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
         { 
             foreignKeyDataset.foreach(row -> {insertForeignKey(row);});
         }
-        catch (Exception e)
+        catch (DatabaseException e)
         {
             System.out.println("FOREIGN KEY BTREE ERROR:" + e);
         }
@@ -77,7 +77,7 @@ public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
         return CheckResult.REJECTED;
     }
 
-    private void insertForeignKey(Row row)
+    private void insertForeignKey(Row row) throws DatabaseException
     {
         
         try
@@ -91,12 +91,7 @@ public class BPlusTreeForeignKeyCheck implements IRowCheck, Serializable {
         {
             return;
         }
-        catch (DatabaseException e)
-        {
-            //TODO: Handle Database exceptions somehow.
-            System.out.println(e);
-            return;
-        }
+
     }
 
     public String getCheckType()

@@ -23,7 +23,7 @@ public class Client {
         facade.registerDataset("src\\test\\resources\\datasets\\cars_100.csv", "frame2", true);
     
         final long startTime = System.currentTimeMillis();
-        //TO-DO: Performance issue when using price/mileage. Large numbers..?
+
         ClientRequest req = ClientRequest.builder()
                             .onDataset("frame1")
                             .withColumnType("price", DomainType.INTEGER)
@@ -42,6 +42,7 @@ public class Client {
         System.out.println("Succesful: " + response.isSuccesful());
         System.out.println("Rejected Rows: " + response.getNumberOfRejectedRows());
         System.out.println("Invalid Rows: " + response.getNumberOfInvalidRows());
+        if (!response.isSuccesful()) System.out.println("Failure Reason: " + response.getErrorDetails());
 
         final long endTime = System.currentTimeMillis();
         System.out.println("Total execution time: " + (endTime - startTime)/1000d + " second(s)");

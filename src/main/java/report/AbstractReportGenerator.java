@@ -32,8 +32,8 @@ public abstract class AbstractReportGenerator implements IReportGenerator, Seria
 
     private void generateReportFromServerRequest(Dataset<Row> dataSet, ServerRequest serverRequest, String path)
     {
+        if (serverRequest.getRowChecks().size() == 0) return;
         ViolatingRowPolicy policy = serverRequest.getViolatingRowPolicy();
-
         switch (policy)
         {
             //WARN will just make the report. By default, we always make a report.
