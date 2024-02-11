@@ -41,12 +41,12 @@ public abstract class AbstractReportGenerator implements IReportGenerator, Seria
                 break;
             case ISOLATE:
                 isolateRejectedEntries(dataSet, serverRequest,
-                path + "\\" +  serverRequest.getProfile().getAlias() + "-request" + requestCounter + "-passedEntries.csv",
-                path + "\\" +  serverRequest.getProfile().getAlias()  + "-request" + requestCounter + "-rejectedEntries.csv");
+                path + "\\" +  serverRequest.getProfile().getAlias() + "-request" + requestCounter + "-passedEntries.tsv",
+                path + "\\" +  serverRequest.getProfile().getAlias()  + "-request" + requestCounter + "-rejectedEntries.tsv");
                 break;
             case PURGE:
                 purgeRejectedEntries(dataSet, serverRequest,
-                path + "\\" +  serverRequest.getProfile().getAlias()  + "-request" + requestCounter + "-passedEntries.csv");
+                path + "\\" +  serverRequest.getProfile().getAlias()  + "-request" + requestCounter + "-passedEntries.tsv");
                 break;
         }
         generateWarningLog(serverRequest, path);
@@ -91,8 +91,8 @@ public abstract class AbstractReportGenerator implements IReportGenerator, Seria
         {
             createOrRemakeFile(outputPath);
             fileWriter = new FileWriter(new File(outputPath), true);
-            fileWriter.write(String.join(",",ds.columns()) + "\n");
-            ds.foreach(row -> { fileWriter.write(row.toString().substring(1, row.toString().length()-1) + "\n");} );
+            fileWriter.write(String.join("\t",ds.columns()) + "\n");
+            ds.foreach(row -> { fileWriter.write(row.mkString("\t") + "\n");} );
             fileWriter.close();
         }
         catch (Exception e)
