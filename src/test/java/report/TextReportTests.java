@@ -61,12 +61,12 @@ public class TextReportTests extends RowCheckTest{
     {        
         initGoodDayTest(ViolatingRowPolicy.ISOLATE);
         File logFile = new File(path + "\\frame-request0-log.txt");
-        File passedEntries = new File(path + "\\frame-request0-passedEntries.csv");
-        File rejectedEntries = new File(path + "\\frame-request0-rejectedEntries.csv");
+        File passedEntries = new File(path + "\\frame-request0-passedEntries.tsv");
+        File rejectedEntries = new File(path + "\\frame-request0-rejectedEntries.tsv");
 
         File expectedLog = new File("src\\test\\resources\\reports\\goodDayWarn.txt");
-        File expectedPassed = new File("src\\test\\resources\\reports\\goodDayPassed.csv");
-        File expectedRejected = new File("src\\test\\resources\\reports\\goodDayRejected.csv");
+        File expectedPassed = new File("src\\test\\resources\\reports\\goodDayPassed.tsv");
+        File expectedRejected = new File("src\\test\\resources\\reports\\goodDayRejected.tsv");
         try
         {
             assertTrue(logFile.exists());
@@ -91,10 +91,10 @@ public class TextReportTests extends RowCheckTest{
     {        
         initGoodDayTest(ViolatingRowPolicy.PURGE);
         File logFile = new File(path + "\\frame-request0-log.txt");
-        File passedEntries = new File(path + "\\frame-request0-passedEntries.csv");
+        File passedEntries = new File(path + "\\frame-request0-passedEntries.tsv");
 
         File expectedLog = new File("src\\test\\resources\\reports\\goodDayWarn.txt");
-        File expectedPassed = new File("src\\test\\resources\\reports\\goodDayPassed.csv");
+        File expectedPassed = new File("src\\test\\resources\\reports\\goodDayPassed.tsv");
         try
         {
             assertTrue(logFile.exists());
