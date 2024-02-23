@@ -7,9 +7,15 @@ import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.expressions.Window;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
+import org.apache.spark.util.LongAccumulator;
 
+import config.SparkConfig;
 import model.ServerRequest;
 import model.ServerRequestResult;
 import rowchecks.api.IRowCheck;
@@ -27,41 +33,55 @@ public class ServerRequestExecutor implements Serializable {
 	private ArrayList<IRowCheck> rowChecks;
     private ServerRequestResult requestResult;
 
+    private LongAccumulator rejectedRows = new SparkConfig().getSparkSession().sparkContext().longAccumulator("longAccRejected");
+    private LongAccumulator invalidRows = new SparkConfig().getSparkSession().sparkContext().longAccumulator("longAccInvalid");
+
     public ServerRequestResult executeServerRequest(ServerRequest request)
     {
         requestResult = new ServerRequestResult();
         rowChecks = request.getRowChecks();
 
-        Dataset<Row> dataset = request.getProfile().getDataset();
-        Dataset<String> stringResult = dataset.map((MapFunction<Row, String>) row -> { return executeRowChecks(row); }
-                                                    , Encoders.STRING());
-        Dataset<Row> formattedResult = stringResult.withColumn("values", functions.split(stringResult.col("value"), ","));
+        Dataset<Row> dataset = request.getProfile().getDataset().persist();
+
+        Dataset<Row> rowCheckResults = dataset.map((MapFunction<Row, Row>) row -> { return executeRowChecks(row); }
+                                                    , Encoders.bean(Row.class));
         
+        StructField[] structs = new StructField[rowChecks.size()];
         ArrayList<String> rowCheckTypes = new ArrayList<>();
         for (int i = 0; i < rowChecks.size(); i++)
         {
             rowCheckTypes.add(rowChecks.get(i).getCheckType());
-            formattedResult = formattedResult.withColumn("c" + i, formattedResult.col("values").getItem(i));
+            structs[i] = DataTypes.createStructField("c"+i, DataTypes.StringType, true);
         }
-        formattedResult = formattedResult.withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
-        requestResult.applyRowCheckResults(formattedResult, rowCheckTypes);
+        StructType schema = DataTypes.createStructType(structs);
+        rowCheckResults = new SparkConfig().getSparkSession().createDataFrame(rowCheckResults.rdd(), schema); 
         
+        rowCheckResults = rowCheckResults.withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
+    
+        rowCheckResults.count(); //Prompt execution
+        requestResult.applyRowCheckResults(rowCheckResults, rowCheckTypes, rejectedRows.value(), invalidRows.value());
         request.setRequestResult(requestResult);
-        
+        rejectedRows.reset();
+        invalidRows.reset();
         return requestResult;
     }
 
-    private String executeRowChecks(Row row)
+    private Row executeRowChecks(Row row)
     { 
-        String result = "";
-        for (IRowCheck check : rowChecks)
+        String[] result = new String[rowChecks.size()];
+        boolean isRejected = false;
+        boolean isInvalid = false;
+        for (int i = 0; i < rowChecks.size(); i++)
         {
-            CheckResult rowResult = check.check(row); 
-            result += rowResult + ",";
+            CheckResult rowResult = rowChecks.get(i).check(row); 
+            result[i] = rowResult.toString();
 
-            if (rowResult == CheckResult.REJECTED) { requestResult.increaseRejectedRows(); }
-            else if (rowResult != CheckResult.PASSED) { requestResult.increaseInvalidRows(); }
+            if (rowResult == CheckResult.REJECTED) { isRejected = true; }
+            else if (rowResult != CheckResult.PASSED) { isInvalid = true; }
         }
-        return result.substring(0, result.length()-1);
+
+        if (isRejected) rejectedRows.add(1);
+        if (isInvalid) invalidRows.add(1);
+        return RowFactory.create((Object[])result);
     }
 }

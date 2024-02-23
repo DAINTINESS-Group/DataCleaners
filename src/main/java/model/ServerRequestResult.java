@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.storage.StorageLevel;
 
 /**
  * This class represents the result of an executed <code>ServerRequest</code>. Containted inside a <code>ServerRequest</code>,
@@ -35,12 +34,11 @@ public class ServerRequestResult implements Serializable{
     private long invalidRows = 0;
 
 
-    public void applyRowCheckResults(Dataset<Row> rowCheckResults, ArrayList<String> rowCheckTypes) 
+    public void applyRowCheckResults(Dataset<Row> rowCheckResults, ArrayList<String> rowCheckTypes,
+                                     long rejectedRows, long invalidRows) 
     {
-        //Persist data due to lazy evaluation and BPlusTree Interaction.
-        rowCheckResults = rowCheckResults.persist(StorageLevel.MEMORY_AND_DISK());
-        rejectedRows = rowCheckResults.where("value LIKE '%REJECTED%'").count();
-        invalidRows = rowCheckResults.where("value LIKE '%MISSING_VALUE%' OR value LIKE '%ILLEGAL_FIELD%' OR value LIKE '%INTERNAL_ERROR%'").count();
+        this.rejectedRows = rejectedRows;
+        this.invalidRows = invalidRows;
         this.rowCheckResults = rowCheckResults.drop("value", "values");
         this.rowCheckTypes = rowCheckTypes;
     }

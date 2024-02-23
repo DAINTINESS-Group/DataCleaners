@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.spark.sql.Row;
 
 import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
 import rowchecks.api.IRowCheck;
@@ -42,18 +43,17 @@ public class BPlusTreePrimaryKeyCheck implements IRowCheck, Serializable {
         try
         {
             String targetValue = row.getString(row.fieldIndex(targetColumn));
-            
             OperationStatus status = bTreeWrapper.getBPlusTree()
-                                        .putNoDupData(null, new DatabaseEntry(targetValue.getBytes()), new DatabaseEntry("".getBytes()));
-
+                                        .putNoOverwrite(null, new DatabaseEntry(targetValue.getBytes()), new DatabaseEntry("".getBytes()));
+            
             if (status == OperationStatus.SUCCESS) { return CheckResult.PASSED; }
             else if (status == OperationStatus.KEYEXIST) { return CheckResult.REJECTED; }
+            return CheckResult.INTERNAL_ERROR;
         }
         catch (NullPointerException e)
         {
             return CheckResult.REJECTED;
         }
-        return CheckResult.INTERNAL_ERROR;
     }
 
     

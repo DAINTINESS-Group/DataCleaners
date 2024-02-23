@@ -38,7 +38,7 @@ public class BPlusTreeWrapper implements Serializable{
             Environment dbEnv = new Environment(tmpFile, envConfig);
             DatabaseConfig dbConfig = new DatabaseConfig();
             dbConfig.setAllowCreate(true);
-            dbConfig.setSortedDuplicates(true);
+            dbConfig.setSortedDuplicates(false);
             dbConfig.setTransactional(false);
 
             bPlusTree = dbEnv.openDatabase(null, dbName, dbConfig);
