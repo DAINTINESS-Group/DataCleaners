@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.apache.spark.sql.Row;
 
 import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
 import rowchecks.api.IRowCheck;
