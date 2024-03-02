@@ -23,6 +23,7 @@ public class BPlusPrimaryKeyTests extends RowCheckTest {
     public void primaryKeyBadDayTest()
     {
         rowChecks.clear();
+        excludedRows.clear();
         excludedResult = CheckResult.REJECTED;
         rowChecks.add(new BPlusTreePrimaryKeyCheck("price"));
 
