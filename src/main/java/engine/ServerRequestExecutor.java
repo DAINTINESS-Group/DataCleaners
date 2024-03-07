@@ -13,6 +13,7 @@ import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.util.LongAccumulator;
 
 import config.SparkConfig;
@@ -56,7 +57,7 @@ public class ServerRequestExecutor implements Serializable {
         StructType schema = DataTypes.createStructType(structs);
         rowCheckResults = new SparkConfig().getSparkSession().createDataFrame(rowCheckResults.rdd(), schema); 
         
-        rowCheckResults = rowCheckResults.withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A"))));
+        rowCheckResults = rowCheckResults.withColumn("_id", functions.row_number().over(Window.orderBy(functions.lit("A")))).persist(StorageLevel.DISK_ONLY());
     
         rowCheckResults.count(); //Prompt execution
         requestResult.applyRowCheckResults(rowCheckResults, rowCheckTypes, rejectedRows.value(), invalidRows.value());
